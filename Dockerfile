@@ -3,6 +3,7 @@ ARG RUNTIME=ruby2.5
 FROM lambci/lambda:build-${RUNTIME} AS install
 COPY *.gemspec Gemfile /var/task/
 ARG GEMSPEC_VERSION
+ENV BUNDLE_SILENCE_ROOT_WARNING 1
 RUN bundle install
 
 FROM install AS build
