@@ -9,5 +9,4 @@ FROM install AS build
 COPY . .
 ARG GEMSPEC_VERSION
 RUN bundle exec rake
-RUN bundle exec gem build *.gemspec
-RUN mkdir pkg && mv *.gem pkg
+RUN bundle exec gem build *.gemspec --output release.gem
