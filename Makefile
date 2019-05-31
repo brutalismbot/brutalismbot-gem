@@ -8,7 +8,7 @@ pkgfile   := pkg/$(build).gem
 
 # Docker Build
 image := brutalismbot/$(name)
-digest = $(shell cat tmp/$(build).build)
+digest = $(shell cat $(buildfile))
 
 $(pkgfile): | Gemfile.lock pkg
 	docker run --rm $(digest) cat /var/task/release.gem > $@
@@ -34,5 +34,3 @@ shell: $(buildfile)
 clean:
 	docker image rm -f $(image) $(shell sed G tmp/*.build)
 	rm -rf pkg tmp
-
-# ruby -e 'print Gem::Specification::load("$(name).gemspec").version'
