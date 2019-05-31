@@ -1,6 +1,11 @@
+
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require "brutalismbot/version"
+
 Gem::Specification.new do |spec|
   spec.name          = "brutalismbot"
-  spec.version       = ENV["GEMSPEC_VERSION"] || %x{git describe --tags}
+  spec.version       = Brutalismbot::VERSION
   spec.authors       = ["Alexander Mancevice"]
   spec.email         = ["smallweirdnum@gmail.com"]
   spec.summary       = %q{Mirror posts from /r/brutalism to Slack}
