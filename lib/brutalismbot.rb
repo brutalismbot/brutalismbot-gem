@@ -1,3 +1,4 @@
+require "brutalismbot/event"
 require "brutalismbot/oauth"
 require "brutalismbot/r"
 require "brutalismbot/s3"
