@@ -43,7 +43,7 @@ module R
         response = JSON.parse http.request(request).body
         children = response.dig("data", "children") || []
         children.reverse.each do |child|
-          post = Post[child]
+          post = R::Brutalism::Post[child]
           yield post if post.created_after @min_time
         end
       end
