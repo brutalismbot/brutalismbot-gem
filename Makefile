@@ -18,7 +18,6 @@ Gemfile.lock: $(name).gemspec | $(buildfile)
 
 $(buildfile): | tmp
 	docker build \
-	--build-arg GEMSPEC_VERSION=$(release) \
 	--build-arg RUNTIME=$(runtime) \
 	--iidfile $@ \
 	--tag $(image):$(release) .
