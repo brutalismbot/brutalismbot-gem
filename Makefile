@@ -13,7 +13,7 @@ digest = $(shell cat $(buildfile))
 $(pkgfile): | Gemfile.lock pkg
 	docker run --rm $(digest) cat /var/task/release.gem > $@
 
-Gemfile.lock: $(name).gemspec | $(buildfile)
+Gemfile.lock: $(buildfile)
 	docker run --rm $(digest) cat /var/task/$@ > $@
 
 $(buildfile): | tmp
