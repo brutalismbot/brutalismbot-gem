@@ -1,35 +1,33 @@
-# Project
 runtime   := ruby2.5
 name      := brutalismbot
-release   := $(shell git describe --tags --always)
-build     := $(name)-$(release)
-buildfile := tmp/$(build).build
-pkgfile   := pkg/$(build).gem
+version   := $(shell ruby -e 'puts Gem::Specification::load("$(name).gemspec").version')
+build     := $(shell git describe --tags --always)
 
 # Docker Build
-image := brutalismbot/$(name)
-digest = $(shell cat $(buildfile))
+image   := brutalismbot/$(name)
+iidfile := .docker/$(build)
+digest   = $(shell cat $(iidfile))
 
-$(pkgfile): | Gemfile.lock pkg
-	docker run --rm $(digest) cat /var/task/release.gem > $@
-
-Gemfile.lock: $(buildfile)
+$(name)-$(version).gem: Gemfile.lock
 	docker run --rm $(digest) cat /var/task/$@ > $@
 
-$(buildfile): | tmp
+Gemfile.lock: $(iidfile)
+	docker run --rm $(digest) cat /var/task/$@ > $@
+
+$(iidfile): | .docker
 	docker build \
 	--build-arg RUNTIME=$(runtime) \
 	--iidfile $@ \
-	--tag $(image):$(release) .
+	--tag $(image):$(build) .
 
-%:
+.docker:
 	mkdir -p $@
 
 .PHONY: shell clean
 
-shell: $(buildfile)
+shell: $(iidfile)
 	docker container run --rm -it $(digest) /bin/bash
 
 clean:
-	docker image rm -f $(image) $(shell sed G tmp/*.build)
-	rm -rf pkg tmp
+	docker image rm -f $(image) $(shell sed G .docker/*)
+	rm -rf .docker .rspec_status Gemfile.lock *.gem
