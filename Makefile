@@ -4,7 +4,7 @@ version   := $(shell ruby -e 'puts Gem::Specification::load("$(name).gemspec").v
 build     := $(shell git describe --tags --always)
 
 # Docker Build
-image   := brutalismbot/$(name)
+image   := brutalismbot/gem
 iidfile := .docker/$(build)
 digest   = $(shell cat $(iidfile))
 
