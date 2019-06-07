@@ -1,38 +1,46 @@
-# Brutalismbot
+<img alt="brutalismbot" src="https://brutalismbot.com/banner.png"/>
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/brutalismbot`. To experiment with that code, run `bin/console` for an interactive prompt.
+Brutalismbot RubyGem
 
-TODO: Delete this and the text above, and describe your gem
+## See Also
+
+- [Brutalismbot API](https://github.com/brutalismbot/api)
+- [Brutalismbot App](https://github.com/brutalismbot/brutalismbot)
+- [Brutalismbot Mail](https://github.com/brutalismbot/mail)
+- [Brutalismbot Web](https://github.com/brutalismbot/brutalismbot.com)
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
 ```ruby
-gem 'brutalismbot'
+gem install brutalismbot
 ```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install brutalismbot
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "aws-sdk-s3"
+require "brutalismbot"
 
-## Development
+bucket  = Aws::S3::Bucket.new name: "my-bucket"
+brutbot = Brutalismbot::S3::Client.new bucket: bucket,
+                                       prefix: "my/prefix/"
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+# Get new posts after a given time
+brutbot.subreddit.new_posts.after Time.parse("2019-06-01 12:00:00Z")
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+# Get current top post
+brutbot.subreddit.top_post
+
+# Get latest cached post
+brutbot.posts.latest
+
+# Get max key in posts
+brutbot.posts.max_key
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/brutalismbot.
+Bug reports and pull requests are welcome on [GitHub](https://github.com/brutalismbot/gem).
 
 ## License
 

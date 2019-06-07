@@ -10,8 +10,9 @@
 # rspec failure tracking
 .rspec_status
 
-/.docker/
+**/.docker/
 Gemfile.lock
 *.env
 *.gem
 *.ruby-version
+*.zip
