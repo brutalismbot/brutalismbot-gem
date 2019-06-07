@@ -1,36 +1,30 @@
-runtime := ruby2.5
 name    := brutalismbot
-version := $(shell ruby -e 'puts Gem::Specification::load("$(name).gemspec").version')
+runtime := ruby2.5
 build   := $(shell git describe --tags --always)
+version := $(shell ruby -e 'puts Gem::Specification::load("$(name).gemspec").version')
 
-# Docker Build
-image   := brutalismbot/gem
-iidfile := .docker/$(build)
-digest   = $(shell cat $(iidfile))
+.PHONY: all clean shell
 
-layer.zip: $(name)-$(version).gem
-	docker run --rm -w /opt/ $(digest) zip -r - ruby > $@
+all: Gemfile.lock layer.zip $(name)-$(version).gem
 
-$(name)-$(version).gem: Gemfile.lock
-	docker run --rm $(digest) cat /var/task/$@ > $@
+.docker:
+	mkdir -p $@
 
-Gemfile.lock: $(iidfile)
-	docker run --rm $(digest) cat /var/task/$@ > $@
-
-$(iidfile): Gemfile | .docker
+.docker/%: Gemfile | .docker
 	docker build \
 	--build-arg RUNTIME=$(runtime) \
 	--iidfile $@ \
-	--tag $(image):$(build) .
+	--tag brutalismbot/gem:$(build) .
 
-.%:
-	mkdir -p $@
+Gemfile.lock $(name)-$(version).gem: .docker/$(build)
+	docker run --rm $(shell cat $<) cat /var/task/$@ > $@
 
-.PHONY: shell clean
+layer.zip: .docker/$(build)
+	docker run --rm -w /opt/ $(shell cat $<) zip -r - ruby > $@
 
-shell: $(iidfile) .env
-	docker container run --rm -it --env-file .env $(digest) /bin/bash
+shell: .docker/$(build) .env
+	docker container run --rm -it --env-file .env $(shell cat $<) /bin/bash
 
 clean:
-	docker image rm -f $(image) $(shell sed G .docker/*)
-	rm -rf .docker .rspec_status Gemfile.lock *.gem *.zip
+	-docker image rm -f $(shell sed G .docker/*)
+	-rm -rf .docker .rspec_status Gemfile.lock *.gem *.zip
