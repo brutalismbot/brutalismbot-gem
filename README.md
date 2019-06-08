@@ -2,13 +2,6 @@
 
 Brutalismbot RubyGem
 
-## See Also
-
-- [Brutalismbot API](https://github.com/brutalismbot/api)
-- [Brutalismbot App](https://github.com/brutalismbot/brutalismbot)
-- [Brutalismbot Mail](https://github.com/brutalismbot/mail)
-- [Brutalismbot Web](https://github.com/brutalismbot/brutalismbot.com)
-
 ## Installation
 
 ```ruby
@@ -45,3 +38,9 @@ Bug reports and pull requests are welcome on [GitHub](https://github.com/brutali
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+### See Also
+
+- [Brutalismbot API](https://github.com/brutalismbot/api)
+- [Brutalismbot App](https://github.com/brutalismbot/brutalismbot)
+- [Brutalismbot Monitoring](https://github.com/brutalismbot/monitoring)
