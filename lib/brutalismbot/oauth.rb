@@ -10,7 +10,7 @@ module Brutalismbot
       res = Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
         if dryrun
           puts "POST DRYRUN #{uri}"
-          OpenStruct.new code: 200, body: JSON.parse(body)
+          OpenStruct.new code: "200", body: JSON.parse(body)
         else
           puts "POST #{uri}"
           req = Net::HTTP::Post.new uri, "content-type" => "application/json"

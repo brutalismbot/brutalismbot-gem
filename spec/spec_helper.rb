@@ -1,4 +1,13 @@
+require 'simplecov'
+SimpleCov.start
+
+if ENV['CI'] == 'true'
+  require 'codecov'
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
+
 require "bundler/setup"
+require "aws-sdk-s3"
 require "brutalismbot"
 
 RSpec.configure do |config|
@@ -11,4 +20,7 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # Stub AWS responses
+  Aws.config.update stub_responses: true
 end

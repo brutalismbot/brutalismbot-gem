@@ -1,5 +1,7 @@
 module R
   class Subreddit
+    attr_reader :endpoint, :user_agent
+
     def initialize(endpoint:nil, user_agent:nil)
       @endpoint   = endpoint
       @user_agent = user_agent
@@ -105,8 +107,6 @@ module R
           a.slice("width", "height").values <=> b.slice("width", "height").values
         end
         CGI.unescapeHTML source.dig("url")
-      rescue NoMethodError
-        dig("data", "media_metadata")&.values&.first&.dig("s", "u")
       end
     end
   end
