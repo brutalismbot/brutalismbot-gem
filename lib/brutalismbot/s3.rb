@@ -3,6 +3,8 @@ module Brutalismbot
     class Client
       VERSION = "v1"
 
+      attr_reader :bucket, :prefix
+
       def initialize(bucket:, prefix:nil)
         @bucket = bucket
         @prefix = prefix
@@ -26,6 +28,8 @@ module Brutalismbot
 
     class Collection
       include Enumerable
+
+      attr_reader :bucket, :prefix
 
       def initialize(bucket:, prefix:)
         @bucket = bucket
@@ -91,7 +95,7 @@ module Brutalismbot
 
       def max_key
         # Dig for max key
-        prefix = prefix_for Time.now.utc
+        prefix = prefix_for time: Time.now.utc
         puts "GET s3://#{@bucket.name}/#{prefix}*"
 
         # Go up a level in prefix if no keys found
@@ -108,7 +112,7 @@ module Brutalismbot
         max_key.key.match(/(\d+).json\z/).to_a.last.to_i
       end
 
-      def prefix_for(time)
+      def prefix_for(time:)
         time  = Time.at(time.to_i).utc
         year  = time.strftime '%Y'
         month = time.strftime '%Y-%m'
@@ -117,7 +121,7 @@ module Brutalismbot
       end
 
       def put(post:, dryrun:nil)
-        key = "#{prefix_for post.created_utc}#{post.created_utc.to_i}.json"
+        key = "#{prefix_for time: post.created_utc}#{post.created_utc.to_i}.json"
         super key: key, body: post.to_json, dryrun: dryrun
       end
     end
