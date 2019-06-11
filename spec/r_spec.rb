@@ -1,5 +1,5 @@
-RSpec.describe R::Brutalism::Post do
-  post = R::Brutalism::Post[JSON.parse({
+RSpec.describe Brutalismbot::R::Brutalism::Post do
+  post = Brutalismbot::R::Brutalism::Post[JSON.parse({
     data: {
       created_utc: 1560032174,
       permalink:   "/r/brutalism/comments/bydae7/santuario_della_madonna_delle_lacrime_syracuse/",
@@ -76,7 +76,7 @@ RSpec.describe R::Brutalism::Post do
   end
 end
 
-RSpec.describe R::Brutalism do
+RSpec.describe Brutalismbot::R::Brutalism do
   mock_response = OpenStruct.new body: {
     data: {
       children: [
@@ -105,16 +105,16 @@ RSpec.describe R::Brutalism do
 
   it "fetches the top post" do
     expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(R::Brutalism.new.top_post).to eq(JSON.parse(mock_response.body).dig("data", "children").first)
+    expect(Brutalismbot::R::Brutalism.new.top_post).to eq(JSON.parse(mock_response.body).dig("data", "children").first)
   end
 
   it "fetches new posts" do
     expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(R::Brutalism.new.new_posts.map.to_a).to eq(JSON.parse(mock_response.body).dig("data", "children"))
+    expect(Brutalismbot::R::Brutalism.new.new_posts.map.to_a).to eq(JSON.parse(mock_response.body).dig("data", "children"))
   end
 
   it "fetches ~no~ new posts" do
     expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(R::Brutalism.new.new_posts.after(Time.at(1560032174)).first).to eq(nil)
+    expect(Brutalismbot::R::Brutalism.new.new_posts.after(Time.at(1560032174)).first).to eq(nil)
   end
 end

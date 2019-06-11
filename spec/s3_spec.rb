@@ -1,15 +1,15 @@
 RSpec.describe Brutalismbot::S3::Client do
   client = Brutalismbot::S3::Client.new bucket: nil
 
-  it "gets an instance of R::Brutalism" do
-    expect(client.subreddit.class).to eq(R::Brutalism)
+  it "gets an instance of Brutalismbot::R::Brutalism" do
+    expect(client.subreddit.class).to eq(Brutalismbot::R::Brutalism)
   end
 
-  it "gets an instance of R::Brutalism with the correct endpoint" do
+  it "gets an instance of Brutalismbot::R::Brutalism with the correct endpoint" do
     expect(client.subreddit.endpoint).to eq("https://www.reddit.com/r/brutalism")
   end
 
-  it "gets an instance of R::Brutalism with the correct user agent" do
+  it "gets an instance of Brutalismbot::R::Brutalism with the correct user agent" do
     expect(client.subreddit.user_agent).to eq("Brutalismbot #{Brutalismbot::VERSION}")
   end
 

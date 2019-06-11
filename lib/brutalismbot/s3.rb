@@ -11,8 +11,8 @@ module Brutalismbot
       end
 
       def subreddit(endpoint:nil, user_agent:nil)
-        R::Brutalism.new endpoint:   endpoint,
-                         user_agent: user_agent
+        Brutalismbot::R::Brutalism.new endpoint:   endpoint,
+                                       user_agent: user_agent
       end
 
       def auths
