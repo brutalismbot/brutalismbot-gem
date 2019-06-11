@@ -4,7 +4,7 @@ module Brutalismbot
       include Enumerable
 
       def each
-        puts "EVENT #{to_json}"
+        Brutalismbot.logger&.info "EVENT #{to_json}"
         dig("Records").each{|x| yield x }
       end
     end

@@ -40,7 +40,7 @@ module Brutalismbot
       end
 
       def each
-        puts "GET #{@uri}"
+        Brutalismbot.logger&.info "GET #{@uri}"
         Net::HTTP.start(@uri.host, @uri.port, use_ssl: @ssl) do |http|
           request  = Net::HTTP::Get.new @uri, "user-agent" => @user_agent
           response = JSON.parse http.request(request).body

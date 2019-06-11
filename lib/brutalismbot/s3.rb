@@ -5,9 +5,10 @@ module Brutalismbot
 
       attr_reader :bucket, :prefix
 
-      def initialize(bucket:, prefix:nil)
+      def initialize(bucket:, prefix:nil, **config)
         @bucket = bucket
         @prefix = prefix
+        Brutalismbot.config.update config
       end
 
       def subreddit(endpoint:nil, user_agent:nil)
@@ -37,7 +38,7 @@ module Brutalismbot
       end
 
       def each
-        puts "GET s3://#{@bucket.name}/#{@prefix}*"
+        Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{@prefix}*"
         @bucket.objects(prefix: @prefix).each do |object|
           yield object
         end
@@ -45,9 +46,9 @@ module Brutalismbot
 
       def put(body:, key:, dryrun:nil)
         if dryrun
-          puts "PUT DRYRUN s3://#{@bucket.name}/#{key}"
+          Brutalismbot.logger&.info "PUT DRYRUN s3://#{@bucket.name}/#{key}"
         else
-          puts "PUT s3://#{@bucket.name}/#{key}"
+          Brutalismbot.logger&.info "PUT s3://#{@bucket.name}/#{key}"
           @bucket.put_object key: key, body: body
         end
       end
@@ -62,12 +63,12 @@ module Brutalismbot
 
       def delete(team_id:, dryrun:nil)
         prefix = "#{@prefix}team=#{team_id}/"
-        puts "GET s3://#{@bucket.name}/#{prefix}*"
+        Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{prefix}*"
         @bucket.objects(prefix: prefix).map do |object|
           if dryrun
-            puts "DELETE DRYRUN s3://#{@bucket.name}/#{object.key}"
+            Brutalismbot.logger&.info "DELETE DRYRUN s3://#{@bucket.name}/#{object.key}"
           else
-            puts "DELETE s3://#{@bucket.name}/#{object.key}"
+            Brutalismbot.logger&.info "DELETE s3://#{@bucket.name}/#{object.key}"
             object.delete
           end
         end
@@ -93,12 +94,12 @@ module Brutalismbot
       def max_key
         # Dig for max key
         prefix = prefix_for time: Time.now.utc
-        puts "GET s3://#{@bucket.name}/#{prefix}*"
+        Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{prefix}*"
 
         # Go up a level in prefix if no keys found
         until (keys = @bucket.objects(prefix: prefix)).any?
           prefix = prefix.split(/[^\/]+\/\z/).first
-          puts "GET s3://#{@bucket.name}/#{prefix}*"
+          Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{prefix}*"
         end
 
         # Return max by key

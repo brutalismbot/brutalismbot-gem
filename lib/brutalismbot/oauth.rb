@@ -7,18 +7,16 @@ module Brutalismbot
     def post(body:, dryrun:nil)
       uri = URI.parse webhook_url
       ssl = uri.scheme == "https"
-      res = Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
+      Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
         if dryrun
-          puts "POST DRYRUN #{uri}"
-          OpenStruct.new code: "200", body: JSON.parse(body)
+          Brutalismbot.logger&.info "POST DRYRUN #{uri}"
         else
-          puts "POST #{uri}"
+          Brutalismbot.logger&.info "POST #{uri}"
           req = Net::HTTP::Post.new uri, "content-type" => "application/json"
           req.body = body
           http.request req
         end
       end
-      {statusCode: res.code, body: res.body}
     end
 
     def team_id

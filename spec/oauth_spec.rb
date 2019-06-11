@@ -32,18 +32,11 @@ RSpec.describe Brutalismbot::OAuth do
   end
 
   it "posts the http body" do
-    mock_response = OpenStruct.new code: "200", body: "ok"
-    expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-
-    body     = {fizz: "buzz"}.to_json
-    response = oauth.post(body: body)
-
-    expect(response).to eq({statusCode: "200", body: "ok"})
+    expect_any_instance_of(Net::HTTP).to receive(:request).and_return('OK')
+    expect(oauth.post(body: {fizz: "buzz"}.to_json)).to eq('OK')
   end
 
-  it "posts the http body [dry-run]" do
-    body     = {fizz: "buzz"}.to_json
-    response = oauth.post(body: body, dryrun: true)
-    expect(response).to eq({statusCode: "200", body: {"fizz"=>"buzz"}})
+  it "posts the http body [DRYRUN]" do
+    expect(oauth.post(body: {fizz: "buzz"}.to_json, dryrun: true)).to eq(nil)
   end
 end
