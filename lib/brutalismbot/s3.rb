@@ -68,7 +68,6 @@ module Brutalismbot
         @bucket.objects(prefix: prefix).map do |object|
           if dryrun
             puts "DELETE DRYRUN s3://#{@bucket.name}/#{object.key}"
-            {bucket: @bucket.name, key: object.key}
           else
             puts "DELETE s3://#{@bucket.name}/#{object.key}"
             object.delete
