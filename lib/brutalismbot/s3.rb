@@ -50,8 +50,6 @@ module Brutalismbot
           puts "PUT s3://#{@bucket.name}/#{key}"
           @bucket.put_object key: key, body: body
         end
-
-        {bucket: @bucket.name, key: key}
       end
     end
 
