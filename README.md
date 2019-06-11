@@ -1,5 +1,9 @@
 <img alt="brutalismbot" src="https://brutalismbot.com/banner.png"/>
 
+[![Gem Version](https://badge.fury.io/rb/brutalismbot.svg)](http://badge.fury.io/rb/brutalismbot)
+[![Build Status](https://travis-ci.com/brutalismbot/gem.svg)](https://travis-ci.com/brutalismbot/gem)
+[![codecov](https://codecov.io/gh/brutalismbot/gem/branch/master/graph/badge.svg)](https://codecov.io/gh/brutalismbot/gem)
+
 Brutalismbot RubyGem
 
 ## Installation
