@@ -8,20 +8,11 @@ module Brutalismbot
         @user_agent = user_agent
       end
 
-      def new_posts(**params)
-        url = File.join @endpoint, "new.json"
+      def posts(resource, **params)
+        url = File.join @endpoint, "#{resource}.json"
         qry = URI.encode_www_form params
         uri = URI.parse "#{url}?#{qry}"
         PostCollection.new uri: uri, user_agent: @user_agent
-      end
-
-      def top_post(**params)
-        url = File.join @endpoint, "top.json"
-        qry = URI.encode_www_form params
-        uri = URI.parse "#{url}?#{qry}"
-        PostCollection.new(uri: uri, user_agent: @user_agent).each do |post|
-          break post unless post.url.nil?
-        end
       end
     end
 
@@ -35,12 +26,8 @@ module Brutalismbot
         @min_time   = min_time.to_i
       end
 
-      def after(time:)
-        PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
-      end
-
       def each
-        Brutalismbot.logger&.info "GET #{@uri}"
+        Brutalismbot.logger.info "GET #{@uri}"
         Net::HTTP.start(@uri.host, @uri.port, use_ssl: @ssl) do |http|
           request  = Net::HTTP::Get.new @uri, "user-agent" => @user_agent
           response = JSON.parse http.request(request).body
@@ -50,6 +37,10 @@ module Brutalismbot
             yield post if post.created_after time: @min_time
           end
         end
+      end
+
+      def since(time:)
+        PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
       end
     end
 

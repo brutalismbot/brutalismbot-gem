@@ -1,4 +1,3 @@
-require "brutalismbot/event"
 require "brutalismbot/r"
 require "brutalismbot/s3"
 require "brutalismbot/version"
@@ -8,17 +7,22 @@ require "net/https"
 module Brutalismbot
   class << self
     @@config = {}
+    @@logger = Logger.new File::NULL
 
     def config
       @@config
     end
 
     def config=(config)
-      @@config = config
+      @@config = config || {}
     end
 
     def logger
-      config[:logger]
+      config[:logger] || @@logger
+    end
+
+    def logger=(logger)
+      config[:logger] = logger
     end
   end
 

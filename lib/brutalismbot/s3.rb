@@ -1,44 +1,17 @@
 module Brutalismbot
   module S3
-    class Client
-      VERSION = "v1"
-
-      attr_reader :bucket, :prefix
-
-      def initialize(bucket:, prefix:nil, **config)
-        @bucket = bucket
-        @prefix = prefix
-        Brutalismbot.config.update config
-      end
-
-      def subreddit(endpoint:nil, user_agent:nil)
-        Brutalismbot::R::Brutalism.new endpoint:   endpoint,
-                                       user_agent: user_agent
-      end
-
-      def auths
-        AuthCollection.new bucket: @bucket,
-                           prefix: "#{@prefix}oauth/#{VERSION}/"
-      end
-
-      def posts
-        PostCollection.new bucket: @bucket,
-                           prefix: "#{@prefix}posts/#{VERSION}/"
-      end
-    end
-
     class Collection
       include Enumerable
 
       attr_reader :bucket, :prefix
 
-      def initialize(bucket:, prefix:)
+      def initialize(bucket:, prefix:nil)
         @bucket = bucket
         @prefix = prefix
       end
 
       def each
-        Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{@prefix}*"
+        Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{@prefix}*"
         @bucket.objects(prefix: @prefix).each do |object|
           yield object
         end
@@ -46,11 +19,25 @@ module Brutalismbot
 
       def put(body:, key:, dryrun:nil)
         if dryrun
-          Brutalismbot.logger&.info "PUT DRYRUN s3://#{@bucket.name}/#{key}"
+          Brutalismbot.logger.info "PUT DRYRUN s3://#{@bucket.name}/#{key}"
         else
-          Brutalismbot.logger&.info "PUT s3://#{@bucket.name}/#{key}"
+          Brutalismbot.logger.info "PUT s3://#{@bucket.name}/#{key}"
           @bucket.put_object key: key, body: body
         end
+      end
+    end
+
+    class Client < Collection
+      def subreddit(endpoint:nil, user_agent:nil)
+        Brutalismbot::R::Brutalism.new endpoint:endpoint, user_agent: user_agent
+      end
+
+      def auths
+        AuthCollection.new bucket: @bucket, prefix: "#{@prefix}auths/"
+      end
+
+      def posts
+        PostCollection.new bucket: @bucket, prefix: "#{@prefix}posts/"
       end
     end
 
@@ -63,12 +50,12 @@ module Brutalismbot
 
       def remove(team:, dryrun:nil)
         prefix = "#{@prefix}team=#{team}/"
-        Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{prefix}*"
+        Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{prefix}*"
         @bucket.objects(prefix: prefix).map do |object|
           if dryrun
-            Brutalismbot.logger&.info "DELETE DRYRUN s3://#{@bucket.name}/#{object.key}"
+            Brutalismbot.logger.info "DELETE DRYRUN s3://#{@bucket.name}/#{object.key}"
           else
-            Brutalismbot.logger&.info "DELETE s3://#{@bucket.name}/#{object.key}"
+            Brutalismbot.logger.info "DELETE s3://#{@bucket.name}/#{object.key}"
             object.delete
           end
         end
@@ -98,12 +85,12 @@ module Brutalismbot
       def max_key
         # Dig for max key
         prefix = prefix_for time: Time.now.utc
-        Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{prefix}*"
+        Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{prefix}*"
 
         # Go up a level in prefix if no keys found
         until (keys = @bucket.objects(prefix: prefix)).any?
           prefix = prefix.split(/[^\/]+\/\z/).first
-          Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{prefix}*"
+          Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{prefix}*"
         end
 
         # Return max by key

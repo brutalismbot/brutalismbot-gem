@@ -79,7 +79,7 @@ RSpec.describe Brutalismbot::S3::AuthCollection do
   end
 
   it "#remove [DRYRUN]" do
-    expect(auths.remove team: "T1234ABCD", dryrun: true).to eq([nil])
+    expect(auths.remove team: "T1234ABCD", dryrun: true).to eq([true])
   end
 
   it "#put" do
@@ -90,7 +90,15 @@ RSpec.describe Brutalismbot::S3::AuthCollection do
 
   it "#put [DRYRUN]" do
     newauth = Brutalismbot::Auth[auth(team_id: "TFIZZBUZZ")]
-    expect(auths.put auth: newauth, dryrun: true).to eq(nil)
+    expect(auths.put auth: newauth, dryrun: true).to eq(true)
+  end
+
+  it "#mirror" do
+    # expect(auths.mirror(body: "{}")).to eq([])
+  end
+
+  it "#mirror [DRYRUN]" do
+    expect(auths.mirror(body: "{}", dryrun: true)).to eq([true, true])
   end
 end
 
@@ -99,8 +107,8 @@ RSpec.describe Brutalismbot::S3::PostCollection do
   bucket  = Aws::S3::Bucket.new client: s3, name: "my-bucket"
   posts   = Brutalismbot::S3::PostCollection.new bucket: bucket, prefix: "my/prefix/"
   postmap = {
-    "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560115697.json" => {"created_utc" => 1560115697},
-    "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560116759.json" => {"created_utc" => 1560116759},
+    "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560115697.json" => {"data" => {"created_utc" => 1560115697}},
+    "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560116759.json" => {"data" => {"created_utc" => 1560116759}},
   }
   s3.stub_responses :list_objects, -> (context) do
     {
@@ -130,7 +138,7 @@ RSpec.describe Brutalismbot::S3::PostCollection do
   end
 
   it "#max_time" do
-    expect(posts.max_time).to eq(postmap.max.last["created_utc"])
+    expect(posts.max_time).to eq(postmap.max.last.dig("data", "created_utc"))
   end
 
   it "#prefix_for" do
@@ -147,6 +155,16 @@ RSpec.describe Brutalismbot::S3::PostCollection do
 
   it "#put [DRYRUN]" do
     newpost = Brutalismbot::Post["data" => {"created_utc" => 1560116759}]
-    expect(posts.put post: newpost, dryrun: true).to eq(nil)
+    expect(posts.put post: newpost, dryrun: true).to eq(true)
+  end
+
+  it "#update" do
+    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post[x] }
+    expect(result.map(&:key)).to eq(postmap.keys)
+  end
+
+  it "#update [DRYRUN]" do
+    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post[x] }, dryrun: true
+    expect(result).to eq([true, true])
   end
 end
