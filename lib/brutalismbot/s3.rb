@@ -57,12 +57,12 @@ module Brutalismbot
     class AuthCollection < Collection
       def each
         super do |object|
-          yield Brutalismbot::OAuth[JSON.parse object.get.body.read]
+          yield Brutalismbot::Auth[JSON.parse object.get.body.read]
         end
       end
 
-      def delete(team_id:, dryrun:nil)
-        prefix = "#{@prefix}team=#{team_id}/"
+      def remove(team:, dryrun:nil)
+        prefix = "#{@prefix}team=#{team}/"
         Brutalismbot.logger&.info "GET s3://#{@bucket.name}/#{prefix}*"
         @bucket.objects(prefix: prefix).map do |object|
           if dryrun
@@ -74,6 +74,10 @@ module Brutalismbot
         end
       end
 
+      def mirror(body:, dryrun:nil)
+        map{|auth| auth.post body: body, dryrun: dryrun }
+      end
+
       def put(auth:, dryrun:nil)
         key = "#{@prefix}team=#{auth.team_id}/channel=#{auth.channel_id}/oauth.json"
         super key: key, body: auth.to_json, dryrun: dryrun
@@ -83,12 +87,12 @@ module Brutalismbot
     class PostCollection < Collection
       def each
         super do |object|
-          yield R::Brutalism::Post[JSON.parse object.get.body.read]
+          yield Brutalismbot::Post[JSON.parse object.get.body.read]
         end
       end
 
       def latest
-        R::Brutalism::Post[JSON.parse max_key.get.body.read]
+        Brutalismbot::Post[JSON.parse max_key.get.body.read]
       end
 
       def max_key
@@ -121,6 +125,10 @@ module Brutalismbot
       def put(post:, dryrun:nil)
         key = "#{prefix_for time: post.created_utc}#{post.created_utc.to_i}.json"
         super key: key, body: post.to_json, dryrun: dryrun
+      end
+
+      def update(posts:, dryrun:nil)
+        posts.map{|post| put post: post, dryrun: dryrun }
       end
     end
   end

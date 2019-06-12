@@ -35,7 +35,7 @@ module Brutalismbot
         @min_time   = min_time.to_i
       end
 
-      def after(time)
+      def after(time:)
         PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
       end
 
@@ -46,8 +46,8 @@ module Brutalismbot
           response = JSON.parse http.request(request).body
           children = response.dig("data", "children") || []
           children.reverse.each do |child|
-            post = R::Brutalism::Post[child]
-            yield post if post.created_after @min_time
+            post = Brutalismbot::Post[child]
+            yield post if post.created_after time: @min_time
           end
         end
       end
@@ -57,58 +57,6 @@ module Brutalismbot
       def initialize(endpoint:nil, user_agent:nil)
         super endpoint:   endpoint   || "https://www.reddit.com/r/brutalism",
               user_agent: user_agent || "Brutalismbot #{Brutalismbot::VERSION}"
-      end
-
-      class Post < Hash
-        def created_after(time)
-          created_utc.to_i > time.to_i
-        end
-
-        def created_utc
-          Time.at(dig("data", "created_utc").to_i).utc
-        end
-
-        def permalink
-          dig "data", "permalink"
-        end
-
-        def title
-          dig "data", "title"
-        end
-
-        def to_slack
-          {
-            blocks: [
-              {
-                type: "image",
-                title: {
-                  type: "plain_text",
-                  text: "/r/brutalism",
-                  emoji: true,
-                },
-                image_url: url,
-                alt_text: title,
-              },
-              {
-                type: "context",
-                elements: [
-                  {
-                    type: "mrkdwn",
-                    text: "<https://reddit.com#{permalink}|#{title}>",
-                  },
-                ],
-              },
-            ],
-          }
-        end
-
-        def url
-          images = dig "data", "preview", "images"
-          source = images.map{|x| x["source"] }.compact.max do |a,b|
-            a.slice("width", "height").values <=> b.slice("width", "height").values
-          end
-          CGI.unescapeHTML source.dig("url")
-        end
       end
     end
   end

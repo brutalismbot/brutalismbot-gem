@@ -1,6 +1,6 @@
-RSpec.describe Brutalismbot::OAuth do
+RSpec.describe Brutalismbot::Auth do
 
-  oauth = Brutalismbot::OAuth[JSON.parse({
+  oauth = Brutalismbot::Auth[JSON.parse({
     ok:           true,
     access_token: "<token>",
     scope:        "identify,incoming-webhook",

@@ -71,25 +71,25 @@ RSpec.describe Brutalismbot::S3::AuthCollection do
     expect(auths.to_a).to eq(authmap.values)
   end
 
-  it "#delete" do
+  it "#remove" do
     exp = Aws::S3::Types::DeleteObjectOutput.new delete_marker:   false,
                                                  version_id:      "ObjectVersionId",
                                                  request_charged: "RequestCharged"
-    expect(auths.delete team_id: "T1234ABCD").to eq([exp])
+    expect(auths.remove team: "T1234ABCD").to eq([exp])
   end
 
-  it "#delete [DRYRUN]" do
-    expect(auths.delete team_id: "T1234ABCD", dryrun: true).to eq([nil])
+  it "#remove [DRYRUN]" do
+    expect(auths.remove team: "T1234ABCD", dryrun: true).to eq([nil])
   end
 
   it "#put" do
-    newauth = Brutalismbot::OAuth[auth(team_id: "TFIZZBUZZ")]
+    newauth = Brutalismbot::Auth[auth(team_id: "TFIZZBUZZ")]
     exp     = "#{auths.prefix}team=#{newauth.team_id}/channel=#{newauth.channel_id}/oauth.json"
     expect(auths.put(auth: newauth).key).to eq(exp)
   end
 
   it "#put [DRYRUN]" do
-    newauth = Brutalismbot::OAuth[auth(team_id: "TFIZZBUZZ")]
+    newauth = Brutalismbot::Auth[auth(team_id: "TFIZZBUZZ")]
     expect(auths.put auth: newauth, dryrun: true).to eq(nil)
   end
 end
@@ -140,13 +140,13 @@ RSpec.describe Brutalismbot::S3::PostCollection do
   end
 
   it "#put" do
-    newpost = Brutalismbot::R::Brutalism::Post["data" => {"created_utc" => 1560116759}]
+    newpost = Brutalismbot::Post["data" => {"created_utc" => 1560116759}]
     exp     = "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560116759.json"
     expect(posts.put(post: newpost).key).to eq(exp)
   end
 
   it "#put [DRYRUN]" do
-    newpost = Brutalismbot::R::Brutalism::Post["data" => {"created_utc" => 1560116759}]
+    newpost = Brutalismbot::Post["data" => {"created_utc" => 1560116759}]
     expect(posts.put post: newpost, dryrun: true).to eq(nil)
   end
 end

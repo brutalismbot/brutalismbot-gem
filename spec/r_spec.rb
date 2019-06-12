@@ -1,5 +1,5 @@
-RSpec.describe Brutalismbot::R::Brutalism::Post do
-  post = Brutalismbot::R::Brutalism::Post[JSON.parse({
+RSpec.describe Brutalismbot::Post do
+  post = Brutalismbot::Post[JSON.parse({
     data: {
       created_utc: 1560032174,
       permalink:   "/r/brutalism/comments/bydae7/santuario_della_madonna_delle_lacrime_syracuse/",
@@ -27,11 +27,11 @@ RSpec.describe Brutalismbot::R::Brutalism::Post do
   }.to_json)]
 
   it "was created after the epoch" do
-    expect(post.created_after(Time.at(0))).to eq(true)
+    expect(post.created_after(time: Time.at(0))).to eq(true)
   end
 
   it "was ~not~ created after the current time" do
-    expect(post.created_after(Time.now.utc)).to eq(false)
+    expect(post.created_after(time: Time.now.utc)).to eq(false)
   end
 
   it "digs the created_utc value as a Time object" do
@@ -115,6 +115,6 @@ RSpec.describe Brutalismbot::R::Brutalism do
 
   it "fetches ~no~ new posts" do
     expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(Brutalismbot::R::Brutalism.new.new_posts.after(Time.at(1560032174)).first).to eq(nil)
+    expect(Brutalismbot::R::Brutalism.new.new_posts.after(time: Time.at(1560032174)).first).to eq(nil)
   end
 end
