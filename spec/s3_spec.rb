@@ -1,5 +1,5 @@
 RSpec.describe Brutalismbot::S3::Client do
-  client = Brutalismbot::S3::Client.new bucket: nil
+  client = Brutalismbot::S3::Client.new bucket: "my-bucket"
 
   it "gets an instance of Brutalismbot::R::Brutalism" do
     expect(client.subreddit.class).to eq(Brutalismbot::R::Brutalism)
