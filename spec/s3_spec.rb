@@ -68,7 +68,7 @@ RSpec.describe Brutalismbot::S3::AuthCollection do
 
 
   it "#each" do
-    expect(auths.to_a).to eq(authmap.values)
+    expect(auths.to_a).to eq(authmap.values.map{|x| Brutalismbot::Auth.new x })
   end
 
   it "#remove" do
@@ -83,13 +83,13 @@ RSpec.describe Brutalismbot::S3::AuthCollection do
   end
 
   it "#put" do
-    newauth = Brutalismbot::Auth[auth(team_id: "TFIZZBUZZ")]
-    exp     = "#{auths.prefix}team=#{newauth.team_id}/channel=#{newauth.channel_id}/oauth.json"
+    newauth = Brutalismbot::Auth.new auth(team_id: "TFIZZBUZZ")
+    exp     = "#{auths.prefix}team=#{newauth.team_id}/channel=#{newauth.incoming_webhook.channel_id}/oauth.json"
     expect(auths.put(auth: newauth).key).to eq(exp)
   end
 
   it "#put [DRYRUN]" do
-    newauth = Brutalismbot::Auth[auth(team_id: "TFIZZBUZZ")]
+    newauth = Brutalismbot::Auth.new auth(team_id: "TFIZZBUZZ")
     expect(auths.put auth: newauth, dryrun: true).to eq(true)
   end
 
