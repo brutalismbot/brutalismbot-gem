@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://brutalismbot.com"
   spec.license       = "MIT"
   spec.require_paths = ["lib"]
-  spec.files         = Dir["README*", "LICENSE*", "lib/**/*", "Rakefile"]
+  spec.files         = Dir["README*", "LICENSE*", "lib/**/*"]
 
   spec.add_development_dependency "aws-sdk-s3", "~> 1.0"
   spec.add_development_dependency "codecov",    "~> 0.1"

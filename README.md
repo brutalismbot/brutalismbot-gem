@@ -22,17 +22,20 @@ bucket  = Aws::S3::Bucket.new name: "my-bucket"
 brutbot = Brutalismbot::S3::Client.new bucket: bucket,
                                        prefix: "my/prefix/"
 
-# Get new posts after a given time
-brutbot.subreddit.new_posts.after Time.parse("2019-06-01 12:00:00Z")
-
-# Get current top post
-brutbot.subreddit.top_post
-
 # Get latest cached post
 brutbot.posts.latest
 
-# Get max key in posts
+# Get latest post as S3 Object
 brutbot.posts.max_key
+
+# Get post-time of latest cached post
+limit = brutbot.posts.max_time
+
+# Get newest post after a given time
+brutbot.subreddit.posts(:new).since(time: limit).first
+
+# Get current top post
+brutbot.subreddit.posts(:top).first
 ```
 
 ## Contributing
