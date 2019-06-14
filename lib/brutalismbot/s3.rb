@@ -5,9 +5,9 @@ module Brutalismbot
 
       attr_reader :bucket, :prefix
 
-      def initialize(bucket:, prefix:nil)
-        @bucket = bucket
-        @prefix = prefix
+      def initialize(bucket:nil, prefix:nil)
+        @bucket = bucket || ::Aws::S3::Bucket.new(name: ENV["S3_BUCKET"])
+        @prefix = prefix || ENV["S3_PREFIX"]
       end
 
       def each
