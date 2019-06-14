@@ -27,12 +27,18 @@ RSpec.describe Brutalismbot::R::Brutalism do
 
   it "fetches the top post" do
     expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(Brutalismbot::R::Brutalism.new.posts(:top).first).to eq(JSON.parse(mock_response.body).dig("data", "children").first)
+    ret = Brutalismbot::R::Brutalism.new.posts(:top).first
+    exp = Brutalismbot::Post.new JSON.parse(mock_response.body).dig("data", "children").first
+    expect(ret).to eq(exp)
   end
 
   it "fetches new posts" do
     expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(Brutalismbot::R::Brutalism.new.posts(:new).to_a).to eq(JSON.parse(mock_response.body).dig("data", "children"))
+    ret = Brutalismbot::R::Brutalism.new.posts(:new).to_a
+    exp = JSON.parse(mock_response.body).dig("data", "children").map do |x|
+      Brutalismbot::Post.new x
+    end
+    expect(ret).to eq(exp)
   end
 
   it "fetches ~no~ new posts" do

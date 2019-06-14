@@ -74,12 +74,12 @@ module Brutalismbot
     class PostCollection < Collection
       def each
         super do |object|
-          yield Brutalismbot::Post[JSON.parse object.get.body.read]
+          yield Brutalismbot::Post.new JSON.parse(object.get.body.read)
         end
       end
 
       def latest
-        Brutalismbot::Post[JSON.parse max_key.get.body.read]
+        Brutalismbot::Post.new JSON.parse(max_key.get.body.read)
       end
 
       def max_key

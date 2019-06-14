@@ -69,7 +69,7 @@ RSpec.describe Brutalismbot::Auth do
 end
 
 RSpec.describe Brutalismbot::Post do
-  post = Brutalismbot::Post[{
+  post = Brutalismbot::Post.new({
     "data" => {
       "created_utc" => 1560032174,
       "permalink"   => "/r/brutalism/comments/bydae7/santuario_della_madonna_delle_lacrime_syracuse/",
@@ -94,7 +94,7 @@ RSpec.describe Brutalismbot::Post do
         ],
       },
     },
-  }]
+  })
 
   it "was created after the epoch" do
     expect(post.created_after(time: Time.at(0))).to eq(true)
@@ -146,7 +146,7 @@ RSpec.describe Brutalismbot::Post do
   end
 
   it "digs the url from metadata" do
-    post = Brutalismbot::Post[{
+    post = Brutalismbot::Post.new({
       "data" => {
         "media_metadata" => {
           "?": {
@@ -156,7 +156,7 @@ RSpec.describe Brutalismbot::Post do
           }
         }
       }
-    }]
+    })
     expect(post.url).to eq("https://example.com")
   end
 end
