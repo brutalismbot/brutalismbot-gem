@@ -19,8 +19,7 @@ require "aws-sdk-s3"
 require "brutalismbot"
 
 bucket  = Aws::S3::Bucket.new name: "my-bucket"
-brutbot = Brutalismbot::S3::Client.new bucket: bucket,
-                                       prefix: "my/prefix/"
+brutbot = Brutalismbot::S3::Client.new bucket: bucket, prefix: "my/prefix/"
 
 # Get latest cached post
 brutbot.posts.latest
