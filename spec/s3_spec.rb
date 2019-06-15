@@ -126,11 +126,11 @@ RSpec.describe Brutalismbot::S3::PostCollection do
   s3.stub_responses :put_object
 
   it "#each" do
-    expect(posts.to_a).to eq(postmap.values.map{|x| Brutalismbot::Post.new x })
+    expect(posts.to_a).to eq(postmap.values)
   end
 
   it "#latest" do
-    expect(posts.latest).to eq(Brutalismbot::Post.new postmap.max.last)
+    expect(posts.latest).to eq(postmap.max.last)
   end
 
   it "#max_key" do
@@ -148,23 +148,23 @@ RSpec.describe Brutalismbot::S3::PostCollection do
   end
 
   it "#put" do
-    newpost = Brutalismbot::Post.new("data" => {"created_utc" => 1560116759})
+    newpost = Brutalismbot::Post["data" => {"created_utc" => 1560116759}]
     exp     = "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560116759.json"
     expect(posts.put(post: newpost).key).to eq(exp)
   end
 
   it "#put [DRYRUN]" do
-    newpost = Brutalismbot::Post.new("data" => {"created_utc" => 1560116759})
+    newpost = Brutalismbot::Post["data" => {"created_utc" => 1560116759}]
     expect(posts.put post: newpost, dryrun: true).to eq(true)
   end
 
   it "#update" do
-    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post.new x }
+    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post[x] }
     expect(result.map(&:key)).to eq(postmap.keys)
   end
 
   it "#update [DRYRUN]" do
-    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post.new x }, dryrun: true
+    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post[x] }, dryrun: true
     expect(result).to eq([true, true])
   end
 end

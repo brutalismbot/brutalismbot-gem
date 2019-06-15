@@ -58,28 +58,21 @@ module Brutalismbot
     end
   end
 
-  class Post < OpenStruct
-    class Data < OpenStruct
+  class Post < Hash
+    def created_after(time:)
+      created_utc.to_i > time.to_i
     end
 
     def created_utc
-      Time.at(data.created_utc.to_i).utc
-    end
-
-    def created_after(time:)
-      data.created_utc.to_i > time.to_i
-    end
-
-    def data
-      Data.new dig("data")
+      Time.at(dig("data", "created_utc").to_i).utc
     end
 
     def permalink
-      data.permalink
+      dig "data", "permalink"
     end
 
     def title
-      data.title
+      dig "data", "title"
     end
 
     def to_slack
@@ -109,13 +102,13 @@ module Brutalismbot
     end
 
     def url
-      images = data.preview.dig "images"
+      images = dig "data", "preview", "images"
       source = images.map{|x| x["source"] }.compact.max do |a,b|
         a.slice("width", "height").values <=> b.slice("width", "height").values
       end
       CGI.unescapeHTML source.dig("url")
     rescue NoMethodError
-      data.media_metadata&.values&.first&.dig("s", "u")
+      dig("data", "media_metadata")&.values&.first&.dig("s", "u")
     end
   end
 end

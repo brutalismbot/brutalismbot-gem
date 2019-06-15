@@ -33,7 +33,7 @@ module Brutalismbot
           response = JSON.parse http.request(request).body
           children = response.dig("data", "children") || []
           children.reverse.each do |child|
-            post = Brutalismbot::Post.new child
+            post = Brutalismbot::Post[child]
             yield post if post.created_after time: @min_time
           end
         end
