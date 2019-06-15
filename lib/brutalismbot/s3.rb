@@ -44,7 +44,7 @@ module Brutalismbot
     class AuthCollection < Collection
       def each
         super do |object|
-          yield Brutalismbot::Auth.new JSON.parse(object.get.body.read)
+          yield Brutalismbot::Auth[JSON.parse object.get.body.read]
         end
       end
 
@@ -66,7 +66,7 @@ module Brutalismbot
       end
 
       def put(auth:, dryrun:nil)
-        key = "#{@prefix}team=#{auth.team_id}/channel=#{auth.incoming_webhook.channel_id}/oauth.json"
+        key = "#{@prefix}team=#{auth.team_id}/channel=#{auth.channel_id}/oauth.json"
         super key: key, body: auth.to_json, dryrun: dryrun
       end
     end
