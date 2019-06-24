@@ -1,6 +1,6 @@
 module Brutalismbot
   module S3
-    class Collection
+    module Prefixable
       include Enumerable
 
       attr_reader :bucket, :prefix
@@ -27,7 +27,9 @@ module Brutalismbot
       end
     end
 
-    class Client < Collection
+    class Client
+      include Prefixable
+
       def subreddit(endpoint:nil, user_agent:nil)
         Brutalismbot::R::Brutalism.new endpoint:endpoint, user_agent: user_agent
       end
@@ -41,7 +43,9 @@ module Brutalismbot
       end
     end
 
-    class AuthCollection < Collection
+    class AuthCollection
+      include Prefixable
+
       def each
         super do |object|
           yield Brutalismbot::Auth[JSON.parse object.get.body.read]
@@ -71,7 +75,9 @@ module Brutalismbot
       end
     end
 
-    class PostCollection < Collection
+    class PostCollection
+      include Prefixable
+
       def each
         super do |object|
           yield Brutalismbot::Post[JSON.parse object.get.body.read]
