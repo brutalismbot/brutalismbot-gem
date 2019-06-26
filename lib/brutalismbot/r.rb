@@ -33,7 +33,7 @@ module Brutalismbot
           response = JSON.parse http.request(request).body
           children = response.dig("data", "children") || []
           children.reverse.each do |child|
-            post = Brutalismbot::Post[child]
+            post = Post[child]
             yield post if post.created_after time: @min_time
           end
         end
@@ -47,7 +47,7 @@ module Brutalismbot
     class Brutalism < Subreddit
       def initialize(endpoint:nil, user_agent:nil)
         super endpoint:   endpoint   || "https://www.reddit.com/r/brutalism",
-              user_agent: user_agent || "Brutalismbot #{Brutalismbot::VERSION}"
+              user_agent: user_agent || "Brutalismbot #{VERSION}"
       end
     end
   end

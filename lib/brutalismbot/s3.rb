@@ -48,7 +48,7 @@ module Brutalismbot
 
       def each
         super do |object|
-          yield Brutalismbot::Auth[JSON.parse object.get.body.read]
+          yield Auth[JSON.parse object.get.body.read]
         end
       end
 
@@ -80,12 +80,12 @@ module Brutalismbot
 
       def each
         super do |object|
-          yield Brutalismbot::Post[JSON.parse object.get.body.read]
+          yield Post[JSON.parse object.get.body.read]
         end
       end
 
       def latest
-        Brutalismbot::Post[JSON.parse max_key.get.body.read]
+        Post[JSON.parse max_key.get.body.read]
       end
 
       def max_key
