@@ -27,11 +27,11 @@ RSpec.describe Brutalismbot::Post do
   }]
 
   it "was created after the epoch" do
-    expect(post.created_after(time: Time.at(0))).to eq(true)
+    expect(post.created_after?(Time.at(0))).to eq(true)
   end
 
   it "was ~not~ created after the current time" do
-    expect(post.created_after(time: Time.now.utc)).to eq(false)
+    expect(post.created_after?(Time.now.utc)).to eq(false)
   end
 
   it "digs the created_utc value as a Time object" do

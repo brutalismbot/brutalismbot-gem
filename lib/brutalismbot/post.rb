@@ -1,6 +1,6 @@
 module Brutalismbot
   class Post < Hash
-    def created_after(time:)
+    def created_after?(time)
       created_utc.to_i > time.to_i
     end
 
@@ -54,7 +54,7 @@ module Brutalismbot
 
     class << self
       def stub
-        created_utc = Time.now.utc - rand(10000000)
+        created_utc = Time.now.utc - rand(86400) - 86400
         Post[{
           "data" => {
             "created_utc" => created_utc.to_i,

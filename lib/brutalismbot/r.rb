@@ -34,7 +34,7 @@ module Brutalismbot
           children = response.dig("data", "children") || []
           children.reverse.each do |child|
             post = Post[child]
-            yield post if post.created_after time: @min_time
+            yield post if post.created_after? @min_time
           end
         end
       end
