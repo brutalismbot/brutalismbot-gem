@@ -8,6 +8,18 @@ module Brutalismbot
       Time.at(dig("data", "created_utc").to_i).utc
     end
 
+    def fullname
+      "#{kind}_#{id}"
+    end
+
+    def id
+      dig "data", "id"
+    end
+
+    def kind
+      dig "kind"
+    end
+
     def permalink
       dig "data", "permalink"
     end

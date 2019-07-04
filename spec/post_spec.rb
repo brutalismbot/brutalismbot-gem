@@ -1,6 +1,8 @@
 RSpec.describe Brutalismbot::Post do
   post = Brutalismbot::Post[{
+    "kind" => "t3",
     "data" => {
+      "id"          => SecureRandom.alphanumeric(6),
       "created_utc" => 1560032174,
       "permalink"   => "/r/brutalism/comments/bydae7/santuario_della_madonna_delle_lacrime_syracuse/",
       "title"       => "Santuario della Madonna delle Lacrime, Syracuse, Sicily, Italy",
@@ -76,7 +78,7 @@ RSpec.describe Brutalismbot::Post do
   end
 
   it "digs the url from metadata" do
-    post = Brutalismbot::Post[{
+    metapost = Brutalismbot::Post[{
       "data" => {
         "media_metadata" => {
           "?": {
@@ -87,6 +89,10 @@ RSpec.describe Brutalismbot::Post do
         }
       }
     }]
-    expect(post.url).to eq("https://example.com")
+    expect(metapost.url).to eq("https://example.com")
+  end
+
+  it "digs the fullname" do
+    expect(post.fullname).to eq("t3_#{post.dig "data", "id"}")
   end
 end
