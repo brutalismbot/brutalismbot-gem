@@ -15,26 +15,27 @@ gem install brutalismbot
 ## Usage
 
 ```ruby
-require "aws-sdk-s3"
-require "brutalismbot"
+require "brutalismbot/s3"
 
-bucket  = Aws::S3::Bucket.new name: "my-bucket"
-brutbot = Brutalismbot::S3::Client.new bucket: bucket, prefix: "my/prefix/"
+brutbot = Brutalismbot::S3::Client.new bucket: "my-bucket", prefix: "my/prefix/"
 
 # Get latest cached post
-brutbot.posts.latest
+post = brutbot.posts.last
 
-# Get latest post as S3 Object
-brutbot.posts.max_key
+# Get newest posts
+brutbot.subreddit.posts(:new).all
 
-# Get post-time of latest cached post
-limit = brutbot.posts.max_time
-
-# Get newest post after a given time
-brutbot.subreddit.posts(:new).since(time: limit).first
+# Get new posts since latest
+brutbot.subreddit.posts(:new, before: post.fullname).all
 
 # Get current top post
-brutbot.subreddit.posts(:top).first
+brutbot.subreddit.posts(:top, limit: 1).first
+
+# Pull latest posts
+brutbot.posts.pull
+
+# Mirror a post to all clients
+brutbot.auths.mirror post
 ```
 
 ## Contributing

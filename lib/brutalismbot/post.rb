@@ -68,7 +68,9 @@ module Brutalismbot
       def stub
         created_utc = Time.now.utc - rand(86400) - 86400
         Post[{
+          "kind" => "t3",
           "data" => {
+            "id"          => SecureRandom.alphanumeric(6).downcase,
             "created_utc" => created_utc.to_i,
             "permalink"   => "/r/brutalism/comments/#{SecureRandom.alphanumeric}/test/",
             "title"       => "Post to /r/brutalism",

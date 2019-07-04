@@ -1,5 +1,5 @@
 RSpec.describe Brutalismbot::S3::Client do
-  client = Brutalismbot::S3::Client.new bucket: "my-bucket"
+  client = Brutalismbot::S3::StubClient.new bucket: "my-bucket", prefix: "my/prefix/"
 
   it "gets an instance of Brutalismbot::R::Brutalism" do
     expect(client.subreddit.class).to eq(Brutalismbot::R::Brutalism)
@@ -44,127 +44,57 @@ def auth(options = {})
 end
 
 RSpec.describe Brutalismbot::S3::AuthCollection do
-  s3      = Aws::S3::Client.new stub_responses: true
-  bucket  = Aws::S3::Bucket.new client: s3, name: "my-bucket"
-  auths   = Brutalismbot::S3::AuthCollection.new bucket: bucket, prefix: "my/prefix/"
-  authmap = {
-    "#{auths.prefix}team=T1234ABCD/channel=C1234ABCD/oauth.json" => auth(team_id: "T1234ABCD"),
-    "#{auths.prefix}team=TABCD1234/channel=CABCD1234/oauth.json" => auth(team_id: "TABCD1234"),
-  }
-  s3.stub_responses :list_objects, -> (context) do
-    {
-      contents: authmap.keys.select do |key|
-        key.start_with? context.params[:prefix]
-      end.map do |key|
-        {key: key}
-      end
-    }
-  end
-  s3.stub_responses :get_object, -> (context) do
-    {body: authmap[context.params[:key]].to_json}
-  end
-  s3.stub_responses :delete_object
-  s3.stub_responses :put_object
-
+  client = Brutalismbot::S3::StubClient.new(bucket: "my-bucket", prefix: "my/prefix/")
+  auths  = client.auths
 
   it "#each" do
-    expect(auths.to_a).to eq(authmap.values)
+    expect(auths.to_a).to eq(client.instance_variable_get :@auths)
   end
 
-  it "#remove" do
+  it "#delete" do
+    auth = auths.first
     exp = Aws::S3::Types::DeleteObjectOutput.new delete_marker:   false,
                                                  version_id:      "ObjectVersionId",
                                                  request_charged: "RequestCharged"
-    expect(auths.remove team: "T1234ABCD").to eq([exp])
+    expect(auths.delete auth).to eq(exp)
   end
 
-  it "#remove [DRYRUN]" do
-    expect(auths.remove team: "T1234ABCD", dryrun: true).to eq([true])
+  it "#mirror" do
+    stub_url = /hooks.slack.com\/services\/.*/
+    stub_request(:post, stub_url).to_return(body: "ok", status: 200)
+    expect(auths.mirror(client.posts.last).map(&:body)).to eq(["ok"] * auths.count)
   end
 
   it "#put" do
     newauth = Brutalismbot::Auth[auth(team_id: "TFIZZBUZZ")]
     exp     = "#{auths.prefix}team=#{newauth.team_id}/channel=#{newauth.channel_id}/oauth.json"
-    expect(auths.put(auth: newauth).key).to eq(exp)
-  end
-
-  it "#put [DRYRUN]" do
-    newauth = Brutalismbot::Auth[auth(team_id: "TFIZZBUZZ")]
-    expect(auths.put auth: newauth, dryrun: true).to eq(true)
-  end
-
-  it "#mirror" do
-    # expect(auths.mirror(body: "{}")).to eq([])
-  end
-
-  it "#mirror [DRYRUN]" do
-    expect(auths.mirror(body: "{}", dryrun: true)).to eq([true, true])
+    expect(auths.put(newauth).key).to eq(exp)
   end
 end
 
 RSpec.describe Brutalismbot::S3::PostCollection do
-  s3      = Aws::S3::Client.new stub_responses: true
-  bucket  = Aws::S3::Bucket.new client: s3, name: "my-bucket"
-  posts   = Brutalismbot::S3::PostCollection.new bucket: bucket, prefix: "my/prefix/"
-  postmap = {
-    "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560115697.json" => {"data" => {"created_utc" => 1560115697}},
-    "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560116759.json" => {"data" => {"created_utc" => 1560116759}},
-  }
-  s3.stub_responses :list_objects, -> (context) do
-    {
-      contents: postmap.keys.select do |key|
-        key.start_with? context.params[:prefix]
-      end.map do |key|
-        {key: key}
-      end
-    }
-  end
-  s3.stub_responses :get_object, -> (context) do
-    {body: postmap[context.params[:key]].to_json}
-  end
-  s3.stub_responses :delete_object
-  s3.stub_responses :put_object
+  client = Brutalismbot::S3::StubClient.new(bucket: "my-bucket", prefix: "my/prefix/")
+  posts  = client.posts
 
   it "#each" do
-    expect(posts.to_a).to eq(postmap.values)
+    expect(posts.to_a).to eq(client.instance_variable_get :@posts)
   end
 
-  it "#latest" do
-    expect(posts.latest).to eq(postmap.max.last)
+  it "#last" do
+    expect(posts.last).to eq(client.instance_variable_get(:@posts).last)
   end
 
-  it "#max_key" do
-    expect(posts.max_key.key).to eq(postmap.keys.max)
-  end
-
-  it "#max_time" do
-    expect(posts.max_time).to eq(postmap.max.last.dig("data", "created_utc"))
-  end
-
-  it "#prefix_for" do
-    time = Time.parse "2019-06-09 12:34:56Z"
-    exp  = "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/"
-    expect(posts.prefix_for time: time).to eq(exp)
+  it "#pull" do
+    stub_url   = /www.reddit.com\/r\/brutalism\/new.json.*?/
+    stub_body  = {data: {children: client.posts.all.map(&:to_h)}}
+    exp        = client.posts.map{|x| posts.key_for x }
+    stub_request(:get, stub_url).to_return(body: stub_body.to_json)
+    expect(posts.pull.map(&:key)).to eq(exp)
   end
 
   it "#put" do
     newpost = Brutalismbot::Post["data" => {"created_utc" => 1560116759}]
     exp     = "#{posts.prefix}year=2019/month=2019-06/day=2019-06-09/1560116759.json"
-    expect(posts.put(post: newpost).key).to eq(exp)
-  end
-
-  it "#put [DRYRUN]" do
-    newpost = Brutalismbot::Post["data" => {"created_utc" => 1560116759}]
-    expect(posts.put post: newpost, dryrun: true).to eq(true)
-  end
-
-  it "#update" do
-    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post[x] }
-    expect(result.map(&:key)).to eq(postmap.keys)
-  end
-
-  it "#update [DRYRUN]" do
-    result = posts.update posts: postmap.values.map{|x| Brutalismbot::Post[x] }, dryrun: true
-    expect(result).to eq([true, true])
+    expect(posts.put(newpost).key).to eq(exp)
   end
 end

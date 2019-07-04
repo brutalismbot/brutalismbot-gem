@@ -7,7 +7,7 @@ if ENV['CI'] == 'true'
 end
 
 require "bundler/setup"
-require "aws-sdk-s3"
+require "webmock/rspec"
 require "brutalismbot"
 require "brutalismbot/s3"
 

@@ -1,127 +1,174 @@
+require "aws-sdk-s3"
+
+require "brutalismbot"
+
 module Brutalismbot
   module S3
-    module Prefixable
+    class Prefix
       include Enumerable
 
-      attr_reader :bucket, :prefix
+      attr_reader :prefix, :client
 
-      def initialize(bucket:nil, prefix:nil)
-        @bucket = bucket || ::Aws::S3::Bucket.new(name: ENV["S3_BUCKET"])
-        @prefix = prefix || ENV["S3_PREFIX"]
+      def initialize(bucket:nil, prefix:nil, client:nil)
+        @bucket = bucket || "brutalismbot"
+        @prefix = prefix || "data/v1/"
+        @client = client || Aws::S3::Client.new
       end
 
       def each
-        Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{@prefix}*"
-        @bucket.objects(prefix: @prefix).each do |object|
-          yield object
-        end
+        bucket.objects(prefix: @prefix).each{|x| yield x }
       end
 
-      def put(body:, key:, dryrun:nil)
-        if dryrun
-          Brutalismbot.logger.info "PUT DRYRUN s3://#{@bucket.name}/#{key}"
-        else
-          Brutalismbot.logger.info "PUT s3://#{@bucket.name}/#{key}"
-          @bucket.put_object key: key, body: body
-        end
+      def all
+        to_a
+      end
+
+      def bucket(options = {})
+        options[:name]   ||= @bucket
+        options[:client] ||= @client
+        Aws::S3::Bucket.new options
+      end
+
+      def put(object)
+        key = key_for object
+        Brutalismbot.logger.info "PUT #{@client.config.stub_responses ? "DRYRUN ": ""}s3://#{@bucket}/#{key}"
+        bucket.put_object key: key, body: object.to_json
+      end
+
+      def delete(object)
+        key = key_for object
+        Brutalismbot.logger.info "DELETE #{@client.config.stub_responses ? "DRYRUN ": ""}s3://#{@bucket}/#{key}"
+        bucket.object(key).delete
       end
     end
 
-    class Client
-      include Prefixable
-
-      def subreddit(endpoint:nil, user_agent:nil)
-        Brutalismbot::R::Brutalism.new endpoint:endpoint, user_agent: user_agent
-      end
-
+    class Client < Prefix
       def auths
-        AuthCollection.new bucket: @bucket, prefix: "#{@prefix}auths/"
+        prefix = File.join @prefix, "auths/"
+        AuthCollection.new bucket: @bucket, prefix: prefix, client: @client
       end
 
       def posts
-        PostCollection.new bucket: @bucket, prefix: "#{@prefix}posts/"
+        prefix = File.join @prefix, "posts/"
+        PostCollection.new bucket: @bucket, prefix: prefix, client: @client
+      end
+
+      def subreddit(endpoint:nil, user_agent:nil)
+        R::Brutalism.new endpoint:endpoint, user_agent: user_agent
       end
     end
 
-    class AuthCollection
-      include Prefixable
-
+    class AuthCollection < Prefix
       def each
-        super do |object|
-          yield Auth[JSON.parse object.get.body.read]
-        end
+        super{|x| yield Auth[JSON.parse x.get.body.read] }
       end
 
-      def remove(team:, dryrun:nil)
-        prefix = "#{@prefix}team=#{team}/"
-        Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{prefix}*"
-        @bucket.objects(prefix: prefix).map do |object|
-          if dryrun
-            Brutalismbot.logger.info "DELETE DRYRUN s3://#{@bucket.name}/#{object.key}"
-          else
-            Brutalismbot.logger.info "DELETE s3://#{@bucket.name}/#{object.key}"
-            object.delete
-          end
-        end
+      def key_for(auth)
+        File.join @prefix, "team=#{auth.team_id}/channel=#{auth.channel_id}/oauth.json"
       end
 
-      def mirror(body:, dryrun:nil)
-        map{|auth| auth.post body: body, dryrun: dryrun }
-      end
-
-      def put(auth:, dryrun:nil)
-        key = "#{@prefix}team=#{auth.team_id}/channel=#{auth.channel_id}/oauth.json"
-        super key: key, body: auth.to_json, dryrun: dryrun
+      def mirror(post, options = {})
+        options[:body] = post.to_slack.to_json
+        map{|x| x.post options }
       end
     end
 
-    class PostCollection
-      include Prefixable
-
+    class PostCollection < Prefix
       def each
-        super do |object|
-          yield Post[JSON.parse object.get.body.read]
-        end
+        super{|x| yield Post[JSON.parse x.get.body.read] }
       end
 
-      def latest
+      def key_for(post)
+        File.join @prefix, post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json")
+      end
+
+      def last
+        # Dig for max key
+        prefix = Time.now.utc.strftime "#{@prefix}year=%Y/month=%Y-%m/day=%Y-%m-%d/"
+        Brutalismbot.logger.info "GET s3://#{@bucket}/#{prefix}*"
+
+        # Go up a level in prefix if no keys found
+        until (keys = bucket.objects(prefix: prefix)).any?
+          prefix = prefix.split(/[^\/]+\/\z/).first
+          Brutalismbot.logger.info "GET s3://#{@bucket}/#{prefix}*"
+        end
+
+        # Get max by key
+        max_key = keys.max{|a,b| a.key <=> b.key }
+
+        # Parse as Post
         Post[JSON.parse max_key.get.body.read]
       end
 
-      def max_key
-        # Dig for max key
-        prefix = prefix_for time: Time.now.utc
-        Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{prefix}*"
+      def pull(options = {})
+        options[:before] ||= last.fullname
+        R::Brutalism.new.posts(:new, options).reverse_each.map{|x| put x }
+      end
+    end
 
-        # Go up a level in prefix if no keys found
-        until (keys = @bucket.objects(prefix: prefix)).any?
-          prefix = prefix.split(/[^\/]+\/\z/).first
-          Brutalismbot.logger.info "GET s3://#{@bucket.name}/#{prefix}*"
-        end
+    class StubClient < Client
+      def initialize(bucket:nil, prefix:nil, client:nil)
+        client ||= Aws::S3::Client.new stub_responses: true
+        super
 
-        # Return max by key
-        keys.max{|a,b| a.key <=> b.key }
+        @auths = 3.times.map{ Auth.stub }
+        @posts = 3.times.map{ Post.stub }.sort{|a,b| a.created_utc <=> b.created_utc }
+        @client.stub_responses :list_objects, -> (context) { stub_list_objects context }
+        @client.stub_responses :get_object,   -> (context) { stub_get_object context }
       end
 
-      def max_time
-        max_key.key.match(/(\d+).json\z/).to_a.last.to_i
+      def stub_list_objects(context)
+        {
+          contents: if context.params[:prefix] =~ /auths\//
+            @auths.map do |auth|
+              File.join(
+                @prefix,
+                "auths",
+                "team=#{auth.team_id}",
+                "channel=#{auth.channel_id}",
+                "oauth.json",
+              )
+            end
+          elsif context.params[:prefix] =~ /posts\//
+            @posts.map do |post|
+              File.join(
+                @prefix,
+                "posts",
+                post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json"),
+              )
+            end
+          end.select do |key|
+            key.start_with? context.params[:prefix]
+          end.map do |key|
+            {
+              key: key
+            }
+          end
+        }
       end
 
-      def prefix_for(time:)
-        time  = Time.at(time.to_i).utc
-        year  = time.strftime '%Y'
-        month = time.strftime '%Y-%m'
-        day   = time.strftime '%Y-%m-%d'
-        "#{@prefix}year=#{year}/month=#{month}/day=#{day}/"
-      end
-
-      def put(post:, dryrun:nil)
-        key = "#{prefix_for time: post.created_utc}#{post.created_utc.to_i}.json"
-        super key: key, body: post.to_json, dryrun: dryrun
-      end
-
-      def update(posts:, dryrun:nil)
-        posts.map{|post| put post: post, dryrun: dryrun }
+      def stub_get_object(context)
+        {
+          body: if context.params[:key] =~ /auths\//
+            @auths.select do |auth|
+              File.join(
+                @prefix,
+                "auths",
+                "team=#{auth.team_id}",
+                "channel=#{auth.channel_id}",
+                "oauth.json",
+              ) == context.params[:key]
+            end.first
+          elsif context.params[:key] =~ /posts\//
+            @posts.select do |post|
+              File.join(
+                @prefix,
+                "posts",
+                post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json"),
+              ) == context.params[:key]
+            end.first
+          end.to_json
+        }
       end
     end
   end
