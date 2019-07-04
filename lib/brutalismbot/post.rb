@@ -51,5 +51,27 @@ module Brutalismbot
     rescue NoMethodError
       dig("data", "media_metadata")&.values&.first&.dig("s", "u")
     end
+
+    class << self
+      def stub
+        created_utc = Time.now.utc - rand(10000000)
+        Post[{
+          "data" => {
+            "created_utc" => created_utc.to_i,
+            "permalink"   => "/r/brutalism/comments/#{SecureRandom.alphanumeric}/test/",
+            "title"       => "Post to /r/brutalism",
+            "preview" => {
+              "images" => [
+                {
+                  "source" => {
+                    "url" => "https://preview.redd.it/#{SecureRandom.alphanumeric}.jpg",
+                  }
+                }
+              ]
+            }
+          }
+        }]
+      end
+    end
   end
 end
