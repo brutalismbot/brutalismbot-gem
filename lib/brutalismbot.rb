@@ -1,9 +1,11 @@
+require "logger"
+require "securerandom"
+require "net/https"
+
 require "brutalismbot/auth"
 require "brutalismbot/post"
 require "brutalismbot/r"
 require "brutalismbot/version"
-require "logger"
-require "net/https"
 
 module Brutalismbot
   class << self
