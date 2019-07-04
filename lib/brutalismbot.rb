@@ -1,7 +1,6 @@
 require "brutalismbot/auth"
 require "brutalismbot/post"
 require "brutalismbot/r"
-require "brutalismbot/s3"
 require "brutalismbot/version"
 require "logger"
 require "net/https"
