@@ -30,4 +30,13 @@ RSpec.describe Brutalismbot::Auth do
   it "reads the webhook_url" do
     expect(auth.webhook_url).to eq("https://hooks.slack.com/services/TABCD1234/BABCD1234/1234567890abcdef12345678")
   end
+
+  it "posts the http body" do
+    expect_any_instance_of(Net::HTTP).to receive(:request).and_return('OK')
+    expect(auth.post(body: {fizz: "buzz"}.to_json)).to eq('OK')
+  end
+
+  it "posts the http body [DRYRUN]" do
+    expect(auth.post(body: {fizz: "buzz"}.to_json, dryrun: true)).to eq(nil)
+  end
 end

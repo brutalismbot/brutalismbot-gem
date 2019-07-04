@@ -4,6 +4,17 @@ module Brutalismbot
       dig "incoming_webhook", "channel_id"
     end
 
+    def post(body:, dryrun:nil)
+      uri = URI.parse webhook_url
+      ssl = uri.scheme == "https"
+      req = Net::HTTP::Post.new uri, "content-type" => "application/json"
+      req.body = body
+      Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
+        Brutalismbot.logger.info "POST #{dryrun ? "DRYRUN " : ""}#{uri}"
+        http.request req unless dryrun
+      end
+    end
+
     def team_id
       dig "team_id"
     end
