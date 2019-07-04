@@ -37,6 +37,6 @@ RSpec.describe Brutalismbot::R::Brutalism do
 
   it "fetches ~no~ new posts" do
     expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(Brutalismbot::R::Brutalism.new.posts(:new).since(time: Time.at(1560032174)).first).to eq(nil)
+    expect(Brutalismbot::R::Brutalism.new.posts(:new).since(Time.at(1560032174)).first).to eq(nil)
   end
 end

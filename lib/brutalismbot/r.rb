@@ -5,10 +5,10 @@ module Brutalismbot
 
       def initialize(endpoint:nil, user_agent:nil)
         @endpoint   = endpoint
-        @user_agent = user_agent
+        @user_agent = user_agent || "Brutalismbot #{VERSION}"
       end
 
-      def posts(resource, **params)
+      def posts(resource, params = {})
         url = File.join @endpoint, "#{resource}.json"
         qry = URI.encode_www_form params
         uri = URI.parse "#{url}?#{qry}"
@@ -39,15 +39,15 @@ module Brutalismbot
         end
       end
 
-      def since(time:)
+      def since(time)
         PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
       end
     end
 
     class Brutalism < Subreddit
       def initialize(endpoint:nil, user_agent:nil)
-        super endpoint:   endpoint   || "https://www.reddit.com/r/brutalism",
-              user_agent: user_agent || "Brutalismbot #{VERSION}"
+        endpoint ||= "https://www.reddit.com/r/brutalism"
+        super
       end
     end
   end
