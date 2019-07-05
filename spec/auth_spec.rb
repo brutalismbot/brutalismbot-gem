@@ -37,6 +37,6 @@ RSpec.describe Brutalismbot::Auth do
   end
 
   it "posts the http body [DRYRUN]" do
-    expect(auth.post(body: {fizz: "buzz"}.to_json, dryrun: true)).to eq(nil)
+    expect(auth.post(body: {fizz: "buzz"}.to_json, dryrun: true).code).to eq("204")
   end
 end

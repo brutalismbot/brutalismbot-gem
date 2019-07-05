@@ -9,9 +9,13 @@ module Brutalismbot
       ssl = uri.scheme == "https"
       req = Net::HTTP::Post.new uri, "content-type" => "application/json"
       req.body = body
-      Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
-        Brutalismbot.logger.info "POST #{dryrun ? "DRYRUN " : ""}#{uri}"
-        http.request req unless dryrun
+      Brutalismbot.logger.info "POST #{dryrun ? "DRYRUN " : ""}#{uri}"
+      if dryrun
+        Net::HTTPOK.new "1.1", "204", "ok"
+      else
+        Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
+          http.request req
+        end
       end
     end
 
