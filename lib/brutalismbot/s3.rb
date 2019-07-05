@@ -9,10 +9,16 @@ module Brutalismbot
 
       attr_reader :prefix, :client
 
-      def initialize(bucket:nil, prefix:nil, client:nil)
+      def initialize(bucket:nil, prefix:nil, client:nil, stub_responses:nil)
         @bucket = bucket || "brutalismbot"
         @prefix = prefix || "data/v1/"
-        @client = client || Aws::S3::Client.new
+        @client = client || Aws::S3::Client.new(stub_responses: stub_responses || false)
+        if stub_responses
+          @auths = 3.times.map{ Auth.stub }
+          @posts = 3.times.map{ Post.stub }.sort{|a,b| a.created_utc <=> b.created_utc }
+          @client.stub_responses :list_objects, -> (context) { stub_list_objects context }
+          @client.stub_responses :get_object,   -> (context) { stub_get_object context }
+        end
       end
 
       def each
@@ -29,16 +35,74 @@ module Brutalismbot
         Aws::S3::Bucket.new options
       end
 
+      def delete(object)
+        key = key_for object
+        Brutalismbot.logger.info "DELETE #{"DRYRUN " if stubbed?}s3://#{@bucket}/#{key}"
+        bucket.object(key).delete
+      end
+
       def put(object)
         key = key_for object
-        Brutalismbot.logger.info "PUT #{@client.config.stub_responses ? "DRYRUN ": ""}s3://#{@bucket}/#{key}"
+        Brutalismbot.logger.info "PUT #{"DRYRUN " if stubbed?}s3://#{@bucket}/#{key}"
         bucket.put_object key: key, body: object.to_json
       end
 
-      def delete(object)
-        key = key_for object
-        Brutalismbot.logger.info "DELETE #{@client.config.stub_responses ? "DRYRUN ": ""}s3://#{@bucket}/#{key}"
-        bucket.object(key).delete
+      def stubbed?
+        @client.config.stub_responses
+      end
+
+      def stub_list_objects(context)
+        {
+          contents: if context.params[:prefix] =~ /auths\//
+            @auths.map do |auth|
+              File.join(
+                @prefix,
+                "auths",
+                "team=#{auth.team_id}",
+                "channel=#{auth.channel_id}",
+                "oauth.json",
+              )
+            end
+          elsif context.params[:prefix] =~ /posts\//
+            @posts.map do |post|
+              File.join(
+                @prefix,
+                "posts",
+                post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json"),
+              )
+            end
+          end.select do |key|
+            key.start_with? context.params[:prefix]
+          end.map do |key|
+            {
+              key: key
+            }
+          end
+        }
+      end
+
+      def stub_get_object(context)
+        {
+          body: if context.params[:key] =~ /auths\//
+            @auths.select do |auth|
+              File.join(
+                @prefix,
+                "auths",
+                "team=#{auth.team_id}",
+                "channel=#{auth.channel_id}",
+                "oauth.json",
+              ) == context.params[:key]
+            end.first
+          elsif context.params[:key] =~ /posts\//
+            @posts.select do |post|
+              File.join(
+                @prefix,
+                "posts",
+                post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json"),
+              ) == context.params[:key]
+            end.first
+          end.to_json
+        }
       end
     end
 
@@ -103,72 +167,6 @@ module Brutalismbot
       def pull(options = {})
         options[:before] ||= last.fullname
         R::Brutalism.new.posts(:new, options).reverse_each.map{|x| put x }
-      end
-    end
-
-    class StubClient < Client
-      def initialize(bucket:nil, prefix:nil, client:nil)
-        client ||= Aws::S3::Client.new stub_responses: true
-        super
-
-        @auths = 3.times.map{ Auth.stub }
-        @posts = 3.times.map{ Post.stub }.sort{|a,b| a.created_utc <=> b.created_utc }
-        @client.stub_responses :list_objects, -> (context) { stub_list_objects context }
-        @client.stub_responses :get_object,   -> (context) { stub_get_object context }
-      end
-
-      def stub_list_objects(context)
-        {
-          contents: if context.params[:prefix] =~ /auths\//
-            @auths.map do |auth|
-              File.join(
-                @prefix,
-                "auths",
-                "team=#{auth.team_id}",
-                "channel=#{auth.channel_id}",
-                "oauth.json",
-              )
-            end
-          elsif context.params[:prefix] =~ /posts\//
-            @posts.map do |post|
-              File.join(
-                @prefix,
-                "posts",
-                post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json"),
-              )
-            end
-          end.select do |key|
-            key.start_with? context.params[:prefix]
-          end.map do |key|
-            {
-              key: key
-            }
-          end
-        }
-      end
-
-      def stub_get_object(context)
-        {
-          body: if context.params[:key] =~ /auths\//
-            @auths.select do |auth|
-              File.join(
-                @prefix,
-                "auths",
-                "team=#{auth.team_id}",
-                "channel=#{auth.channel_id}",
-                "oauth.json",
-              ) == context.params[:key]
-            end.first
-          elsif context.params[:key] =~ /posts\//
-            @posts.select do |post|
-              File.join(
-                @prefix,
-                "posts",
-                post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json"),
-              ) == context.params[:key]
-            end.first
-          end.to_json
-        }
       end
     end
   end

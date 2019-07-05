@@ -1,5 +1,7 @@
 RSpec.describe Brutalismbot::S3::Client do
-  client = Brutalismbot::S3::StubClient.new bucket: "my-bucket", prefix: "my/prefix/"
+  client = Brutalismbot::S3::Client.new bucket:         "my-bucket",
+                                        prefix:         "my/prefix/",
+                                        stub_responses: true
 
   it "gets an instance of Brutalismbot::R::Brutalism" do
     expect(client.subreddit.class).to eq(Brutalismbot::R::Brutalism)
@@ -44,7 +46,9 @@ def auth(options = {})
 end
 
 RSpec.describe Brutalismbot::S3::AuthCollection do
-  client = Brutalismbot::S3::StubClient.new(bucket: "my-bucket", prefix: "my/prefix/")
+  client = Brutalismbot::S3::Client.new bucket:         "my-bucket",
+                                        prefix:         "my/prefix/",
+                                        stub_responses: true
   auths  = client.auths
 
   it "#each" do
@@ -73,7 +77,9 @@ RSpec.describe Brutalismbot::S3::AuthCollection do
 end
 
 RSpec.describe Brutalismbot::S3::PostCollection do
-  client = Brutalismbot::S3::StubClient.new(bucket: "my-bucket", prefix: "my/prefix/")
+  client = Brutalismbot::S3::Client.new bucket:         "my-bucket",
+                                        prefix:         "my/prefix/",
+                                        stub_responses: true
   posts  = client.posts
 
   it "#each" do
