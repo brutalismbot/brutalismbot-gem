@@ -57,9 +57,9 @@ RSpec.describe Brutalismbot::S3::AuthCollection do
 
   it "#delete" do
     auth = auths.first
-    exp = Aws::S3::Types::DeleteObjectOutput.new delete_marker:   false,
-                                                 version_id:      "ObjectVersionId",
-                                                 request_charged: "RequestCharged"
+    exp = Aws::S3::Types::DeleteObjectsOutput.new deleted:         [],
+                                                  request_charged: "RequestCharged",
+                                                  errors:          []
     expect(auths.delete auth).to eq(exp)
   end
 

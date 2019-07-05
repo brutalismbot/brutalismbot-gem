@@ -16,6 +16,7 @@ module Brutalismbot
         if stub_responses
           @auths = 3.times.map{ Auth.stub }
           @posts = 3.times.map{ Post.stub }.sort{|a,b| a.created_utc <=> b.created_utc }
+          @client.stub_responses :delete_object
           @client.stub_responses :list_objects, -> (context) { stub_list_objects context }
           @client.stub_responses :get_object,   -> (context) { stub_get_object context }
         end
@@ -38,7 +39,7 @@ module Brutalismbot
       def delete(object)
         key = key_for object
         Brutalismbot.logger.info "DELETE #{"DRYRUN " if stubbed?}s3://#{@bucket}/#{key}"
-        bucket.object(key).delete
+        bucket.delete_objects delete: {objects: [{key: key}]}
       end
 
       def put(object)
