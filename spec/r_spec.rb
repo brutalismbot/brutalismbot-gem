@@ -1,42 +1,25 @@
 RSpec.describe Brutalismbot::R::Brutalism do
-  mock_response = OpenStruct.new body: {
-    data: {
-      children: [
-        {
-          data: {
-            created_utc: 1560032174,
-            permalink:   "/r/brutalism/comments/bydae7/santuario_della_madonna_delle_lacrime_syracuse/",
-            title:       "Santuario della Madonna delle Lacrime, Syracuse, Sicily, Italy",
-            url:         "https://i.redd.it/yr1325t2j7331.jpg",
-            preview: {
-              images: [
-                {
-                  source: {
-                    url:    "https://preview.redd.it/yr1325t2j7331.jpg?auto=webp&amp;s=4bda723dce4734501279b99be1c68075e0fc722e",
-                    width:  3456,
-                    height: 4608
-                  },
-                },
-              ],
-            },
-          },
-        },
-      ],
-    },
-  }.to_json
+  subreddit = Brutalismbot::R::Brutalism.new
+  posts     = 3.times.map{ Brutalismbot::Post.stub }.sort{|a,b| b.created_utc <=> a.created_utc }
 
   it "fetches the top post" do
-    expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(Brutalismbot::R::Brutalism.new.posts(:top).first).to eq(JSON.parse(mock_response.body).dig("data", "children").first)
+    stub_url  = "https://www.reddit.com/r/brutalism/top.json"
+    stub_body = {data: {children: posts.map(&:to_h)}}
+    stub_request(:get, stub_url).to_return(body: stub_body.to_json)
+    expect(subreddit.posts(:top).all).to eq(posts)
   end
 
   it "fetches new posts" do
-    expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(Brutalismbot::R::Brutalism.new.posts(:new).to_a).to eq(JSON.parse(mock_response.body).dig("data", "children"))
+    stub_url  = "https://www.reddit.com/r/brutalism/new.json"
+    stub_body = {data: {children: posts.map(&:to_h)}}
+    stub_request(:get, stub_url).to_return(body: stub_body.to_json)
+    expect(subreddit.posts(:new).all).to eq(posts)
   end
 
-  it "fetches ~no~ new posts" do
-    expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_response)
-    expect(Brutalismbot::R::Brutalism.new.posts(:new).since(Time.at(1560032174)).first).to eq(nil)
+  it "fetches the last post" do
+    stub_url  = "https://www.reddit.com/r/brutalism/new.json"
+    stub_body = {data: {children: posts}}
+    stub_request(:get, stub_url).to_return(body: stub_body.to_json)
+    expect(subreddit.posts(:new).last).to eq(posts.last)
   end
 end

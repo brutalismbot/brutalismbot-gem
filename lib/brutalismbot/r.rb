@@ -19,11 +19,10 @@ module Brutalismbot
     class PostCollection
       include Enumerable
 
-      def initialize(uri:, user_agent:, min_time:nil)
+      def initialize(uri:, user_agent:)
         @uri        = uri
         @ssl        = uri.scheme == "https"
         @user_agent = user_agent
-        @min_time   = min_time.to_i
       end
 
       def each
@@ -32,15 +31,19 @@ module Brutalismbot
           request  = Net::HTTP::Get.new @uri, "user-agent" => @user_agent
           response = JSON.parse http.request(request).body
           children = response.dig("data", "children") || []
-          children.reverse.each do |child|
+          children.each do |child|
             post = Post[child]
-            yield post if post.created_after? @min_time
+            yield post
           end
         end
       end
 
-      def since(time)
-        PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
+      def all
+        to_a
+      end
+
+      def last
+        to_a.last
       end
     end
 
