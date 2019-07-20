@@ -90,6 +90,14 @@ RSpec.describe Brutalismbot::S3::PostCollection do
     expect(posts.last).to eq(client.instance_variable_get(:@posts).last)
   end
 
+  it "#max_key" do
+    expect(posts.max_key.key).to eq(posts.key_for posts.to_a.last)
+  end
+
+  it "#max_time" do
+    expect(posts.max_time).to eq(posts.to_a.last.created_utc.to_i)
+  end
+
   it "#pull" do
     stub_url   = /www.reddit.com\/r\/brutalism\/new.json.*?/
     stub_body  = {data: {children: client.posts.all.map(&:to_h)}}

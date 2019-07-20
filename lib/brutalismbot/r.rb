@@ -19,10 +19,11 @@ module Brutalismbot
     class PostCollection
       include Enumerable
 
-      def initialize(uri:, user_agent:)
+      def initialize(uri:, user_agent:, min_time:nil)
         @uri        = uri
         @ssl        = uri.scheme == "https"
         @user_agent = user_agent
+        @min_time   = min_time.to_i
       end
 
       def each
@@ -33,7 +34,7 @@ module Brutalismbot
           children = response.dig("data", "children") || []
           children.each do |child|
             post = Post[child]
-            yield post
+            yield post if post.created_after? @min_time
           end
         end
       end
@@ -44,6 +45,10 @@ module Brutalismbot
 
       def last
         to_a.last
+      end
+
+      def since(time)
+        PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
       end
     end
 

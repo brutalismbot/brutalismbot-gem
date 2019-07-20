@@ -148,6 +148,10 @@ module Brutalismbot
       end
 
       def last
+        Post[JSON.parse max_key.get.body.read]
+      end
+
+      def max_key
         # Dig for max key
         prefix = Time.now.utc.strftime "#{@prefix}year=%Y/month=%Y-%m/day=%Y-%m-%d/"
         Brutalismbot.logger.info "GET s3://#{@bucket}/#{prefix}*"
@@ -158,11 +162,12 @@ module Brutalismbot
           Brutalismbot.logger.info "GET s3://#{@bucket}/#{prefix}*"
         end
 
-        # Get max by key
-        max_key = keys.max{|a,b| a.key <=> b.key }
+        # Return max by key
+        keys.max{|a,b| a.key <=> b.key }
+      end
 
-        # Parse as Post
-        Post[JSON.parse max_key.get.body.read]
+      def max_time
+        max_key.key.match(/(\d+).json\z/).to_a.last.to_i
       end
 
       def pull(options = {})
