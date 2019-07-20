@@ -170,8 +170,8 @@ module Brutalismbot
         max_key.key.match(/(\d+).json\z/).to_a.last.to_i
       end
 
-      def pull(options = {})
-        R::Brutalism.new.posts(:new, options).reverse_each.map{|x| put x }
+      def pull(since:nil)
+        R::Brutalism.new.posts(:new).since(since).reverse_each.map{|x| put x }
       end
     end
   end

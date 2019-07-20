@@ -47,7 +47,7 @@ module Brutalismbot
         to_a.last
       end
 
-      def since(time)
+      def since(time = nil)
         PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
       end
     end
