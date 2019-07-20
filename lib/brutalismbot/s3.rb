@@ -171,7 +171,6 @@ module Brutalismbot
       end
 
       def pull(options = {})
-        options[:before] ||= last.fullname
         R::Brutalism.new.posts(:new, options).reverse_each.map{|x| put x }
       end
     end
