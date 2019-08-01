@@ -1,8 +1,9 @@
 <img alt="brutalismbot" src="https://brutalismbot.com/banner.png"/>
 
-[![Gem Version](https://badge.fury.io/rb/brutalismbot.svg)](http://badge.fury.io/rb/brutalismbot)
 [![Build Status](https://travis-ci.com/brutalismbot/gem.svg)](https://travis-ci.com/brutalismbot/gem)
-[![codecov](https://codecov.io/gh/brutalismbot/gem/branch/master/graph/badge.svg)](https://codecov.io/gh/brutalismbot/gem)
+[![Gem Version](https://badge.fury.io/rb/brutalismbot.svg)](http://badge.fury.io/rb/brutalismbot)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/83275cbdbf10f9fd2df7/test_coverage)](https://codeclimate.com/github/brutalismbot/gem/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/83275cbdbf10f9fd2df7/maintainability)](https://codeclimate.com/github/brutalismbot/gem/maintainability)
 
 Brutalismbot RubyGem
 

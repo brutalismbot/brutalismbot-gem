@@ -1,7 +1,0 @@
-*
-!*.gemspec
-!.rspec
-!Gemfile*
-!Rakefile
-!lib/*
-!spec/*
