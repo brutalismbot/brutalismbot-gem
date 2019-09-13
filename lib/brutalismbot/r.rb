@@ -1,5 +1,33 @@
 module Brutalismbot
   module R
+    class PostCollection
+      include Enumerable
+
+      def initialize(uri:, user_agent:)
+        @uri        = uri
+        @ssl        = uri.scheme == "https"
+        @user_agent = user_agent
+      end
+
+      def each
+        Brutalismbot.logger.info "GET #{@uri}"
+        Net::HTTP.start(@uri.host, @uri.port, use_ssl: @ssl) do |http|
+          request  = Net::HTTP::Get.new @uri, "user-agent" => @user_agent
+          response = JSON.parse http.request(request).body
+          children = response.dig("data", "children") || []
+          children.each{|x| yield Post[x] }
+        end
+      end
+
+      def all
+        to_a
+      end
+
+      def last
+        to_a.last
+      end
+    end
+
     class Subreddit
       attr_reader :endpoint, :user_agent
 
@@ -13,42 +41,6 @@ module Brutalismbot
         qry = URI.encode_www_form params
         uri = URI.parse "#{url}?#{qry}"
         PostCollection.new uri: uri, user_agent: @user_agent
-      end
-    end
-
-    class PostCollection
-      include Enumerable
-
-      def initialize(uri:, user_agent:, min_time:nil)
-        @uri        = uri
-        @ssl        = uri.scheme == "https"
-        @user_agent = user_agent
-        @min_time   = min_time.to_i
-      end
-
-      def each
-        Brutalismbot.logger.info "GET #{@uri}"
-        Net::HTTP.start(@uri.host, @uri.port, use_ssl: @ssl) do |http|
-          request  = Net::HTTP::Get.new @uri, "user-agent" => @user_agent
-          response = JSON.parse http.request(request).body
-          children = response.dig("data", "children") || []
-          children.each do |child|
-            post = Post[child]
-            yield post if post.created_after? @min_time
-          end
-        end
-      end
-
-      def all
-        to_a
-      end
-
-      def last
-        to_a.last
-      end
-
-      def since(time = nil)
-        PostCollection.new uri: @uri, user_agent: @user_agent, min_time: time
       end
     end
 
