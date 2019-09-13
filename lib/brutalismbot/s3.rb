@@ -170,8 +170,11 @@ module Brutalismbot
         max_key.key.match(/(\d+).json\z/).to_a.last.to_i
       end
 
-      def pull(since:nil)
-        R::Brutalism.new.posts(:new).since(since).reverse_each.map{|x| put x }
+      def pull(min_time = nil, max_time = nil)
+        posts = R::Brutalism.new.posts(:new)
+        posts = posts.select{|x| x.created_between?(min_time, max_time) }
+        posts = posts.sort{|a,b| a.created_utc <=> b.created_utc }
+        posts.map{|x| put x }
       end
     end
   end
