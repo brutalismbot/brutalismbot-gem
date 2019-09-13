@@ -1,7 +1,15 @@
 module Brutalismbot
   class Post < Hash
-    def created_after?(time)
-      created_utc.to_i > time.to_i
+    def created_after?(time = nil)
+      time.nil? || created_utc.to_i > time.to_i
+    end
+
+    def created_before?(time = nil)
+      time.nil? || created_utc.to_i < time.to_i
+    end
+
+    def created_between?(start, stop)
+      created_after?(start) && created_before?(stop)
     end
 
     def created_utc
