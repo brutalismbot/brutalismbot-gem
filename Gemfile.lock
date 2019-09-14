@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    brutalismbot (0.6.0)
+    brutalismbot (0.6.1)
 
 GEM
   remote: https://rubygems.org/
