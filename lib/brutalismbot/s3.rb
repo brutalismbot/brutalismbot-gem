@@ -105,6 +105,10 @@ module Brutalismbot
           end.to_json
         }
       end
+
+      def subreddit(endpoint:nil, user_agent:nil)
+        R::Brutalism.new endpoint:endpoint, user_agent: user_agent
+      end
     end
 
     class Client < Prefix
@@ -116,10 +120,6 @@ module Brutalismbot
       def posts
         prefix = File.join @prefix, "posts/"
         PostCollection.new bucket: @bucket, prefix: prefix, client: @client
-      end
-
-      def subreddit(endpoint:nil, user_agent:nil)
-        R::Brutalism.new endpoint:endpoint, user_agent: user_agent
       end
     end
 
@@ -170,8 +170,8 @@ module Brutalismbot
         max_key.key.match(/(\d+).json\z/).to_a.last.to_i
       end
 
-      def pull(min_time = nil, max_time = nil)
-        posts = R::Brutalism.new.posts(:new)
+      def pull(min_time:nil, max_time:nil, endpoint:nil, user_agent:nil)
+        posts = subreddit(endpoint: endpoint, user_agent: user_agent).posts(:new)
         posts = posts.select{|x| x.created_between?(min_time, max_time) }
         posts = posts.sort{|a,b| a.created_utc <=> b.created_utc }
         posts.map{|x| put x }

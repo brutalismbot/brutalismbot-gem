@@ -103,7 +103,7 @@ RSpec.describe Brutalismbot::S3::PostCollection do
     stub_body  = {data: {children: client.posts.all.map(&:to_h)}}
     exp        = client.posts.map{|x| posts.key_for x }
     stub_request(:get, stub_url).to_return(body: stub_body.to_json)
-    expect(posts.pull.map(&:key)).to eq(exp)
+    expect(posts.pull(min_time: 0, max_time: Time.now.utc).map(&:key)).to eq(exp)
   end
 
   it "#put" do
