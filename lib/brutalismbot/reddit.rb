@@ -1,0 +1,1 @@
+require "brutalismbot/reddit/client"
