@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.files         = Dir["README*", "LICENSE*", "lib/**/*"]
 
+  spec.add_runtime_dependency "twitter", "~> 6.2"
+
   spec.add_development_dependency "aws-sdk-s3", "~> 1.0"
   spec.add_development_dependency "bundler",    "~> 2.0"
   spec.add_development_dependency "pry",        "~> 0.12"
