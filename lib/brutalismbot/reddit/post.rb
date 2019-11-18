@@ -11,7 +11,7 @@ module Brutalismbot
       extend Parsable
       extend Stub
 
-      def_delegators :@item, :[], :dig, :fetch
+      def_delegators :@item, :[], :dig, :fetch, :to_h, :to_json
 
       def initialize(item = {})
         @item = JSON.parse(item.to_json)

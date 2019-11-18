@@ -2,15 +2,18 @@ require "forwardable"
 require "json"
 require "net/http"
 
+require "brutalismbot/logger"
+require "brutalismbot/parsable"
 require "brutalismbot/slack/stub"
 
 module Brutalismbot
   module Slack
     class Auth
+      extend Parsable
       extend Forwardable
       extend Stub
 
-      def_delegators :@item, :[], :dig, :fetch
+      def_delegators :@item, :[], :dig, :fetch, :to_h, :to_json
 
       def initialize(item = {})
         @item = JSON.parse(item.to_json)
@@ -28,15 +31,15 @@ module Brutalismbot
         @item.dig("incoming_webhook", "url")
       end
 
-      def post(body, dryrun:nil)
+      def post(post, dryrun:nil)
         uri = URI.parse(webhook_url)
-        ssl = uri.scheme == "https"
-        req = Net::HTTP::Post.new(uri, "content-type" => "application/json")
-        req.body = body
         Brutalismbot.logger.info("POST #{"DRYRUN " if dryrun}#{uri}")
         if dryrun
           Net::HTTPOK.new("1.1", "204", "ok")
         else
+          ssl = uri.scheme == "https"
+          req = Net::HTTP::Post.new(uri, "content-type" => "application/json")
+          req.body = post.to_slack.to_json
           Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
             http.request(req)
           end

@@ -1,1 +1,1 @@
-require "brutalismbot/slack/auth"
+require "brutalismbot/slack/client"
