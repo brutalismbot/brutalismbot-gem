@@ -1,9 +1,22 @@
+require "aws-sdk-s3"
+
 require "brutalismbot/version"
-require "brutalismbot/reddit/post_collection"
+require "brutalismbot/reddit/resource"
 
 module Brutalismbot
   module Reddit
+    module Environment
+      def env
+        new(
+          endpoint:   ENV["REDDIT_ENDPOINT"],
+          user_agent: ENV["REDDIT_USER_AGENT"],
+        )
+      end
+    end
+
     class Client
+      extend Environment
+
       attr_reader :endpoint, :user_agent
 
       def initialize(endpoint:nil, user_agent:nil)
@@ -11,11 +24,11 @@ module Brutalismbot
         @user_agent = user_agent || "Brutalismbot #{Brutalismbot::VERSION}"
       end
 
-      def posts(resource, params = {})
+      def list(resource, options = {})
         url = File.join(@endpoint, "#{resource}.json")
-        qry = URI.encode_www_form(params)
+        qry = URI.encode_www_form(options)
         uri = URI.parse("#{url}?#{qry}")
-        PostCollection.new(uri: uri, user_agent: @user_agent)
+        Resource.new(uri: uri, user_agent: @user_agent)
       end
     end
   end

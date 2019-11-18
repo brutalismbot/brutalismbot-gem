@@ -28,63 +28,41 @@ module Brutalismbot
       end
 
       def created_utc
-        Time.at(@item.dig("data", "created_utc").to_i).utc
+        Time.at(data["created_utc"].to_i).utc
       end
 
       def fullname
         "#{kind}_#{id}"
       end
 
+      def data
+        @item.fetch("data", {})
+      end
+
       def id
-        @item.dig("data", "id")
+        data["id"]
       end
 
       def kind
-        @item.dig("kind")
+        data["kind"]
       end
 
       def permalink
-        @item.dig("data", "permalink")
+        "https://reddit.com#{data["permalink"]}"
       end
 
       def title
-        @item.dig("data", "title")
-      end
-
-      def to_slack
-        {
-          blocks: [
-            {
-              type: "image",
-              title: {
-                type: "plain_text",
-                text: "/r/brutalism",
-                emoji: true,
-              },
-              image_url: url,
-              alt_text: title,
-            },
-            {
-              type: "context",
-              elements: [
-                {
-                  type: "mrkdwn",
-                  text: "<https://reddit.com#{permalink}|#{title}>",
-                },
-              ],
-            },
-          ],
-        }
+        data["title"]
       end
 
       def url
-        images = @item.dig("data", "preview", "images")
+        images = data.dig("preview", "images") || {}
         source = images.map{|x| x["source"] }.compact.max do |a,b|
           a.slice("width", "height").values <=> b.slice("width", "height").values
         end
         CGI.unescapeHTML(source.dig("url"))
       rescue NoMethodError
-        @item.dig("data", "media_metadata")&.values&.first&.dig("s", "u")
+        data["media_metadata"]&.values&.first&.dig("s", "u")
       end
     end
   end
