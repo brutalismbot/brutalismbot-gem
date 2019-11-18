@@ -1,12 +1,14 @@
 require "forwardable"
 require "json"
 
+require "brutalismbot/parsable"
 require "brutalismbot/reddit/stub"
 
 module Brutalismbot
   module Reddit
     class Post
       extend Forwardable
+      extend Parsable
       extend Stub
 
       def_delegators :@item, :[], :dig, :fetch
@@ -63,6 +65,36 @@ module Brutalismbot
         CGI.unescapeHTML(source.dig("url"))
       rescue NoMethodError
         data["media_metadata"]&.values&.first&.dig("s", "u")
+      end
+
+      def to_slack
+        {
+          blocks: [
+            {
+              type: "image",
+              title: {
+                type: "plain_text",
+                text: "/r/brutalism",
+                emoji: true,
+              },
+              image_url: url,
+              alt_text: title,
+            },
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "mrkdwn",
+                  text: "<#{permalink}|#{title}>",
+                },
+              ],
+            },
+          ],
+        }
+      end
+
+      def to_twitter
+        [title, permalink].join("\n")
       end
     end
   end
