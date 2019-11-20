@@ -13,5 +13,12 @@ module Brutalismbot
       @slack   = slack   || Slack::Client.new
       @twitter = twitter || Twitter::Client.new
     end
+
+    def pull(min_time:nil, max_time:nil, dryrun:nil)
+      posts = @reddit.list(:new)
+      posts = posts.select{|post| post.created_between?(min_time, max_time) }
+      posts = posts.sort{|a,b| a.created_utc <=> b.created_utc }
+      posts.map{|post| @posts.push(post, dryrun: dryrun) }
+    end
   end
 end

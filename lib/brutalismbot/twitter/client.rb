@@ -3,7 +3,7 @@ require "tempfile"
 
 require "twitter"
 
-require "brutalismbot/version"
+require "brutalismbot/logger"
 
 module Brutalismbot
   module Twitter
@@ -19,15 +19,18 @@ module Brutalismbot
         end
       end
 
-      def push(post)
-        file = Tempfile.new
-        begin
-          open(post.url){|res| file.write(res.read) }
-          file.rewind
-          @client.update_with_media(post.to_twitter, file)
-        ensure
-          file.close
-          file.unlink
+      def push(post, dryrun:nil)
+        Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}twitter://@brutalismbot")
+        unless dryrun
+          file = Tempfile.new
+          begin
+            open(post.url){|res| file.write(res.read) }
+            file.rewind
+            @client.update_with_media(post.to_twitter, file)
+          ensure
+            file.close
+            file.unlink
+          end
         end
       end
     end

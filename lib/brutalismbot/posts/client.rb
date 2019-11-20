@@ -13,6 +13,12 @@ module Brutalismbot
         super
       end
 
+      def push(post, dryrun:nil)
+        key = key_for(post)
+        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
+        bucket.put_object(key: key, body: post.to_json) unless dryrun
+      end
+
       def list(options = {})
         options = {bucket: @bucket, prefix: @prefix, client: @client}.merge(options)
         S3::Prefix.new(options) do |object|

@@ -10,7 +10,7 @@ module Brutalismbot
 
       def initialize(endpoint:nil, user_agent:nil)
         @endpoint   = endpoint   || ENV["REDDIT_ENDPOINT"]   || "https://www.reddit.com/r/brutalism"
-        @user_agent = user_agent || ENV["REDDIT_USER_AGENT"] || "Brutalismbot #{Brutalismbot::VERSION}"
+        @user_agent = user_agent || ENV["REDDIT_USER_AGENT"] || "Brutalismbot v#{Brutalismbot::VERSION}"
       end
 
       def list(resource, options = {})
