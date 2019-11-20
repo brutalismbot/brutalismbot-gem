@@ -9,7 +9,7 @@ module Brutalismbot
     class Client < S3::Client
       def initialize(bucket:nil, prefix:nil, client:nil)
         bucket ||= ENV["SLACK_S3_BUCKET"] || "brutalismbot"
-        prefix ||= ENV["SLACK_S3_PREFIX"] || "data/v1/auths"
+        prefix ||= ENV["SLACK_S3_PREFIX"] || "data/v1/auths/"
         super
       end
 
