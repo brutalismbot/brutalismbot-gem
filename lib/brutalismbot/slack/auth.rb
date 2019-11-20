@@ -3,21 +3,13 @@ require "json"
 require "net/http"
 
 require "brutalismbot/logger"
-require "brutalismbot/parsable"
+require "brutalismbot/base"
 require "brutalismbot/slack/stub"
 
 module Brutalismbot
   module Slack
-    class Auth
-      extend Parsable
-      extend Forwardable
+    class Auth < Base
       extend Stub
-
-      def_delegators :@item, :[], :dig, :fetch, :to_h, :to_json
-
-      def initialize(item = {})
-        @item = JSON.parse(item.to_json)
-      end
 
       def channel_id
         @item.dig("incoming_webhook", "channel_id")

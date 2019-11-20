@@ -1,21 +1,13 @@
 require "forwardable"
 require "json"
 
-require "brutalismbot/parsable"
+require "brutalismbot/base"
 require "brutalismbot/reddit/stub"
 
 module Brutalismbot
   module Reddit
-    class Post
-      extend Forwardable
-      extend Parsable
+    class Post < Base
       extend Stub
-
-      def_delegators :@item, :[], :dig, :fetch, :to_h, :to_json
-
-      def initialize(item = {})
-        @item = JSON.parse(item.to_json)
-      end
 
       def created_after?(time = nil)
         time.nil? || created_utc.to_i > time.to_i
@@ -54,7 +46,7 @@ module Brutalismbot
       end
 
       def title
-        data["title"]
+        CGI.unescapeHTML(data["title"])
       end
 
       def url

@@ -20,12 +20,11 @@ module Brutalismbot
       end
 
       def push(post)
-        text = [post.title, post.permalink].join("\n")
         file = Tempfile.new
         begin
           open(post.url){|res| file.write(res.read) }
           file.rewind
-          @client.update_with_media(text, file)
+          @client.update_with_media(post.to_twitter, file)
         ensure
           file.close
           file.unlink
