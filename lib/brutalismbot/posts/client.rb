@@ -13,26 +13,19 @@ module Brutalismbot
         super
       end
 
-      def push(post, dryrun:nil)
-        key = key_for(post)
-        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
-        bucket.put_object(key: key, body: post.to_json) unless dryrun
+      def key_for(post)
+        File.join(
+          @prefix,
+          post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json")
+        )
       end
 
       def list(options = {})
         options = {bucket: @bucket, prefix: @prefix, client: @client}.merge(options)
         S3::Prefix.new(options) do |object|
           Brutalismbot.logger.info("GET s3://#{@bucket}/#{object.key}")
-          item = JSON.parse(object.get.body.read)
-          Reddit::Post.new(item)
+          Reddit::Post.parse(object.get.body.read)
         end
-      end
-
-      def key_for(post)
-        File.join(
-          @prefix,
-          post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json")
-        )
       end
 
       def max_key
@@ -52,6 +45,12 @@ module Brutalismbot
 
       def max_time
         max_key.key[/(\d+).json\z/, -1].to_i
+      end
+
+      def push(post, dryrun:nil)
+        key = key_for(post)
+        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
+        bucket.put_object(key: key, body: post.to_json) unless dryrun
       end
     end
   end
