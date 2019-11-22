@@ -1,1 +1,0 @@
-require "brutalismbot/slack/client"

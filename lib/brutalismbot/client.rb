@@ -1,7 +1,7 @@
-require "brutalismbot/posts"
-require "brutalismbot/reddit"
-require "brutalismbot/slack"
-require "brutalismbot/twitter"
+require "brutalismbot/posts/client"
+require "brutalismbot/reddit/client"
+require "brutalismbot/slack/client"
+require "brutalismbot/twitter/client"
 
 module Brutalismbot
   class Client

@@ -1,7 +1,8 @@
 require "aws-sdk-s3"
 
 require "brutalismbot/logger"
-require "brutalismbot/s3"
+require "brutalismbot/s3/client"
+require "brutalismbot/s3/prefix"
 require "brutalismbot/reddit/post"
 
 module Brutalismbot

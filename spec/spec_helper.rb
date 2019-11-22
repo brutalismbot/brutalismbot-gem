@@ -4,7 +4,8 @@ SimpleCov.start
 require "bundler/setup"
 require "webmock/rspec"
 require "brutalismbot"
-require "brutalismbot/s3"
+
+Brutalismbot.logger = Logger.new File::NULL
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
