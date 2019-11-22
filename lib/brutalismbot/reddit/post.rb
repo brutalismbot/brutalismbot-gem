@@ -2,13 +2,10 @@ require "forwardable"
 require "json"
 
 require "brutalismbot/base"
-require "brutalismbot/reddit/stub"
 
 module Brutalismbot
   module Reddit
     class Post < Base
-      extend Stub
-
       def created_after?(time = nil)
         time.nil? || created_utc.to_i > time.to_i
       end

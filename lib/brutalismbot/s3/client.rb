@@ -14,6 +14,11 @@ module Brutalismbot
       def bucket(options = {})
         Aws::S3::Bucket.new({name: @bucket, client: @client}.merge(options))
       end
+
+      def list(options = {}, &block)
+        options = {bucket: @bucket, prefix: @prefix, client: @client}.merge(options)
+        Prefix.new(options, &block)
+      end
     end
   end
 end

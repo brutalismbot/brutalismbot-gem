@@ -4,13 +4,10 @@ require "net/http"
 
 require "brutalismbot/logger"
 require "brutalismbot/base"
-require "brutalismbot/slack/stub"
 
 module Brutalismbot
   module Slack
     class Auth < Base
-      extend Stub
-
       def channel_id
         @item.dig("incoming_webhook", "channel_id")
       end

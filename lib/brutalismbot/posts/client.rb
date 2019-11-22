@@ -22,8 +22,7 @@ module Brutalismbot
       end
 
       def list(options = {})
-        options = {bucket: @bucket, prefix: @prefix, client: @client}.merge(options)
-        S3::Prefix.new(options) do |object|
+        super(options) do |object|
           Brutalismbot.logger.info("GET s3://#{@bucket}/#{object.key}")
           Reddit::Post.parse(object.get.body.read)
         end

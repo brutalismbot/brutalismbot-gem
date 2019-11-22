@@ -4,6 +4,8 @@ SimpleCov.start
 require "bundler/setup"
 require "webmock/rspec"
 require "brutalismbot"
+require "brutalismbot/reddit/stub"
+require "brutalismbot/slack/stub"
 
 Brutalismbot.logger = Logger.new File::NULL
 
