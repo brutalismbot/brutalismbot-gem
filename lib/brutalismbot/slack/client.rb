@@ -32,10 +32,10 @@ module Brutalismbot
       end
 
       def push(post, dryrun:nil)
-        list.each do |auth|
+        list.map do |auth|
           key = key_for(auth)
           Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
-          auth.post(post, dryrun: dryrun)
+          auth.push(post, dryrun: dryrun)
         end
       end
 

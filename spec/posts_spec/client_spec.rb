@@ -23,6 +23,12 @@ RSpec.describe Brutalismbot::Posts::Client do
     end
   end
 
+  context "#last" do
+    it "should return the last post" do
+      expect(subject.last.id).to eq posts.last.id
+    end
+  end
+
   context "#list" do
     it "should return a prefix listing" do
       expect(subject.list.map(&:id)).to eq posts.map(&:id)
