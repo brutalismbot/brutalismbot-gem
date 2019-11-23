@@ -20,7 +20,7 @@ module Brutalismbot
 
       def list(options = {})
         super(options) do |object|
-          Brutalismbot.logger.info("GET s3://#{@bucket}/#{object.key}")
+          Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{object.key}")
           Reddit::Post.parse(object.get.body.read)
         end
       end
@@ -28,12 +28,12 @@ module Brutalismbot
       def max_key
         # Dig for max key
         prefix = Time.now.utc.strftime("#{@prefix}year=%Y/month=%Y-%m/day=%Y-%m-%d/")
-        Brutalismbot.logger.info("GET s3://#{@bucket}/#{prefix}*")
+        Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{prefix}*")
 
         # Go up a level in prefix if no keys found
-        until (keys = bucket.objects(prefix: prefix)).any?
+        until (keys = @bucket.objects(prefix: prefix)).any?
           prefix = prefix.split(/[^\/]+\/\z/).first
-          Brutalismbot.logger.info("GET s3://#{@bucket}/#{prefix}*")
+          Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{prefix}*")
         end
 
         # Return max by key
@@ -46,8 +46,8 @@ module Brutalismbot
 
       def push(post, dryrun:nil)
         key = key_for(post)
-        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
-        bucket.put_object(key: key, body: post.to_json) unless dryrun
+        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
+        @bucket.put_object(key: key, body: post.to_json) unless dryrun
       end
     end
   end

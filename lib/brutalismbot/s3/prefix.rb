@@ -5,17 +5,16 @@ require "brutalismbot/s3/client"
 
 module Brutalismbot
   module S3
-    class Prefix < Client
+    class Prefix
       include Enumerable
 
-      def initialize(bucket:nil, prefix:nil, client:nil, &block)
-        @block = block if block_given?
-        super
+      def initialize(prefix, &block)
+        @prefix = prefix
+        @block  = block if block_given?
       end
 
       def each
-        Brutalismbot.logger.info("LIST s3://#{@bucket}/#{@prefix}*")
-        bucket.objects(prefix: @prefix).each do |object|
+        @prefix.each do |object|
           yield @block.nil? ? object : @block.call(object)
         end
       end

@@ -1,12 +1,12 @@
 RSpec.describe Brutalismbot::S3::Prefix do
   let(:client) { Aws::S3::Client.new stub_responses: true }
+  let(:bucket) { Aws::S3::Bucket.new(name: "brutalismbot", client: client) }
+  let(:prefix) { bucket.objects(prefix: "data/test/") }
 
   subject do
-    Brutalismbot::S3::Prefix.new(
-      bucket: "brutalismbot",
-      prefix: "data/test/",
-      client: client
-    ) {|object| JSON.parse object.get.body.read }
+    Brutalismbot::S3::Prefix.new(prefix) do |object|
+      JSON.parse object.get.body.read
+    end
   end
 
   before do

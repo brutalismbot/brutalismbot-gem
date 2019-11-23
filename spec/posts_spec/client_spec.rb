@@ -1,4 +1,8 @@
 RSpec.describe Brutalismbot::Posts::Client do
+  let :now do
+    Time.now + 172800
+  end
+
   let :posts do
     4.times.map{ Brutalismbot::Reddit::Post.stub }.sort{|a,b| a.created_utc <=> b.created_utc }
   end
@@ -7,9 +11,15 @@ RSpec.describe Brutalismbot::Posts::Client do
     Brutalismbot::Posts::Client.stub { posts }
   end
 
+  before do
+    allow(Time).to receive(:now).and_return now
+  end
+
   context "#key_for" do
+    let(:key) { File.join subject.prefix, posts.first.path }
+
     it "should return the key for a post" do
-      expect(subject.key_for posts.first).to eq File.join(subject.prefix, posts.first.path)
+      expect(subject.key_for posts.first).to eq key
     end
   end
 
@@ -28,6 +38,16 @@ RSpec.describe Brutalismbot::Posts::Client do
   context "#max_time" do
     it "should return the max time" do
       expect(subject.max_time).to eq posts.last.created_utc.to_i
+    end
+  end
+
+  context "#push" do
+    let(:key)  { subject.key_for posts.first }
+    let(:body) { posts.first.to_json }
+
+    it "should push the post to storage" do
+      expect(subject.bucket).to receive(:put_object).with(key: key, body: body)
+      subject.push(posts.first)
     end
   end
 end

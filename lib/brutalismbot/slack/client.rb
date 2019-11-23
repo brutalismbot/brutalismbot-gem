@@ -16,8 +16,8 @@ module Brutalismbot
 
       def install(auth, dryrun:nil)
         key = key_for(auth)
-        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
-        bucket.put_object(key: key, body: auth.to_json) unless dryrun
+        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
+        @bucket.put_object(key: key, body: auth.to_json) unless dryrun
       end
 
       def key_for(auth)
@@ -26,7 +26,7 @@ module Brutalismbot
 
       def list(options = {})
         super(options) do |object|
-          Brutalismbot.logger.info("GET s3://#{@bucket}/#{object.key}")
+          Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{object.key}")
           Auth.parse(object.get.body.read)
         end
       end
@@ -34,15 +34,15 @@ module Brutalismbot
       def push(post, dryrun:nil)
         list.each do |auth|
           key = key_for(auth)
-          Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
+          Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
           auth.post(post, dryrun: dryrun)
         end
       end
 
       def uninstall(auth, dryrun:nil)
         key = key_for(auth)
-        Brutalismbot.logger.info("DELETE #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
-        bucket.delete_objects(delete: {objects: [{key: key}]}) unless dryrun
+        Brutalismbot.logger.info("DELETE #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
+        @bucket.delete_objects(delete: {objects: [{key: key}]}) unless dryrun
       end
     end
   end

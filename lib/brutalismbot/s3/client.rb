@@ -3,21 +3,21 @@ require "aws-sdk-s3"
 module Brutalismbot
   module S3
     class Client
-      attr_reader :prefix, :client
+      attr_reader :bucket, :prefix, :client
 
       def initialize(bucket:nil, prefix:nil, client:nil)
-        @bucket = bucket || ENV["S3_BUCKET"] || "brutalismbot"
-        @prefix = prefix || ENV["S3_PREFIX"] || "data/v1/"
-        @client = client || Aws::S3::Client.new
-      end
-
-      def bucket(options = {})
-        Aws::S3::Bucket.new({name: @bucket, client: @client}.merge(options))
+        bucket ||= ENV["S3_BUCKET"] || "brutalismbot"
+        prefix ||= ENV["S3_PREFIX"] || "data/v1/"
+        client ||= Aws::S3::Client.new
+        @bucket = Aws::S3::Bucket.new(name: bucket, client: client)
+        @client = client
+        @prefix = prefix
       end
 
       def list(options = {}, &block)
-        options = {bucket: @bucket, prefix: @prefix, client: @client}.merge(options)
-        Prefix.new(options, &block)
+        Brutalismbot.logger.info("LIST s3://#{@bucket.name}/#{@prefix}*")
+        prefix = @bucket.objects({prefix: @prefix}.merge(options))
+        Prefix.new(prefix, &block)
       end
     end
   end
