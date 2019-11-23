@@ -20,6 +20,10 @@ module Brutalismbot
         @item.dig("incoming_webhook", "url")
       end
 
+      def path
+        File.join("team=#{team_id}", "channel=#{channel_id}", "oauth.json")
+      end
+
       def push(post, dryrun:nil)
         uri = URI.parse(webhook_url)
         Brutalismbot.logger.info("POST #{"DRYRUN " if dryrun}#{uri}")

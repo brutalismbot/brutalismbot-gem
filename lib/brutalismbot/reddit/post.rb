@@ -38,6 +38,10 @@ module Brutalismbot
         data["kind"]
       end
 
+      def path
+        created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json")
+      end
+
       def permalink
         "https://reddit.com#{data["permalink"]}"
       end

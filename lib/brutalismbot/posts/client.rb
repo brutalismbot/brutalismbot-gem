@@ -15,10 +15,7 @@ module Brutalismbot
       end
 
       def key_for(post)
-        File.join(
-          @prefix,
-          post.created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json")
-        )
+        File.join(@prefix, post.path)
       end
 
       def list(options = {})

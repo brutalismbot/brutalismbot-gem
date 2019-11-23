@@ -4,14 +4,12 @@ module Brutalismbot
   module Slack
     class Client
       class << self
-        def stub(count = nil)
+        def stub(&block)
           client = new(prefix: "data/test/auths/")
           client.instance_variable_set(:@stubbed, true)
 
-          items = (count || 1).times.map do
-            item = Auth.stub
-            [client.key_for(item), item.to_h]
-          end.to_h
+          block = -> { [Auth.stub] } unless block_given?
+          items = block.call.map{|x| [client.key_for(x), x.to_h] }.to_h
 
           client.client.stub_responses :list_objects, -> (context) do
             {contents: items.keys.map{|x| {key:x} }}

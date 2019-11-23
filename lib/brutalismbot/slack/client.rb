@@ -21,12 +21,7 @@ module Brutalismbot
       end
 
       def key_for(auth)
-        File.join(
-          @prefix,
-          "team=#{auth.team_id}",
-          "channel=#{auth.channel_id}",
-          "oauth.json",
-        )
+        File.join(@prefix, auth.path)
       end
 
       def list(options = {})

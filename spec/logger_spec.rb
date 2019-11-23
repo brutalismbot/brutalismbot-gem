@@ -10,6 +10,8 @@ RSpec.describe Brutalismbot::Logger do
   end
 
   context "#logger=" do
+    after { Brutalismbot.logger = ::Logger.new(File::NULL) }
+
     it "should set the logger" do
       Brutalismbot.logger = stderr
       expect(subject).to be stderr
