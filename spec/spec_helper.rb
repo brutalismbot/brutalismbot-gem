@@ -6,8 +6,6 @@ require "webmock/rspec"
 require "brutalismbot"
 require "brutalismbot/stub"
 
-Brutalismbot.logger = Logger.new File::NULL
-
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -18,6 +16,9 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # Turn off logging
+  Brutalismbot.logger = Logger.new File::NULL
 
   # Stub AWS responses
   Aws.config.update stub_responses: true

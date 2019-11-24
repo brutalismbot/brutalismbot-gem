@@ -2,21 +2,6 @@ require "securerandom"
 
 module Brutalismbot
   module Reddit
-    class Client
-      class << self
-        def stub
-          client = new
-          client.instance_variable_set(:@stubbed, true)
-
-          def client.list(resource, options = {})
-            options.fetch(:limit, 25).times.map{ Post.stub }
-          end
-
-          client
-        end
-      end
-    end
-
     class Post
       class << self
         def stub(created_utc:nil, post_id:nil, permalink_id:nil, image_id:nil)
@@ -36,11 +21,20 @@ module Brutalismbot
                   {
                     source: {
                       url: "https://preview.redd.it/#{image_id}.jpg",
+                      width: 1000,
+                      height: 1000,
+                    },
+                  },
+                  {
+                    source: {
+                      url: "https://preview.redd.it/small.jpg",
+                      width: 500,
+                      height: 500,
                     }
                   }
-                ]
-              }
-            }
+                ],
+              },
+            },
           )
         end
       end

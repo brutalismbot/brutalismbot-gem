@@ -40,7 +40,7 @@ module Brutalismbot
       @twitter.push(post, dryrun: dryrun)
 
       # Push to Slack
-      @slack.list.each{|auth| auth.push(post, dryrun: dryrun) }
+      @slack.push(post, dryrun: dryrun)
 
       nil
     end

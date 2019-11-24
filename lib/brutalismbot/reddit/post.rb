@@ -35,7 +35,7 @@ module Brutalismbot
       end
 
       def kind
-        data["kind"]
+        @item["kind"]
       end
 
       def path
