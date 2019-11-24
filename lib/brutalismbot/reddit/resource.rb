@@ -1,7 +1,7 @@
 require "net/http"
 
-require "brutalismbot/reddit/post"
 require "brutalismbot/logger"
+require "brutalismbot/reddit/post"
 
 module Brutalismbot
   module Reddit
