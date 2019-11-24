@@ -8,16 +8,18 @@ module Brutalismbot
     class Resource
       include Enumerable
 
-      def initialize(uri:, user_agent:)
-        @uri        = uri
-        @use_ssl    = uri.scheme == "https"
-        @user_agent = user_agent
+      attr_reader :uri, :user_agent
+
+      def initialize(uri:nil, user_agent:nil)
+        @uri        = uri        || "https://www.reddit.com/r/brutalism/new.json"
+        @user_agent = user_agent || "Brutalismbot v#{Brutalismbot::VERSION}"
       end
 
       def each
-        Brutalismbot.logger.info("GET #{@uri}")
-        Net::HTTP.start(@uri.host, @uri.port, use_ssl: @use_ssl) do |http|
-          request  = Net::HTTP::Get.new(@uri, "user-agent" => @user_agent)
+        Brutalismbot.logger.info("GET #{@url}")
+        uri = URI.parse(@uri)
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
+          request  = Net::HTTP::Get.new(uri, "user-agent" => @user_agent)
           response = JSON.parse(http.request(request).body)
           children = response.dig("data", "children") || []
           children.each{|child| yield Post.new(child) }

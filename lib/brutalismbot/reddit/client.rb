@@ -16,7 +16,7 @@ module Brutalismbot
       def list(resource, options = {})
         url = File.join(@endpoint, "#{resource}.json")
         qry = URI.encode_www_form(options)
-        uri = URI.parse("#{url}?#{qry}")
+        uri = "#{url}?#{qry}"
         Resource.new(uri: uri, user_agent: @user_agent)
       end
     end
