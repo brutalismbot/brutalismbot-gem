@@ -30,9 +30,7 @@ module Brutalismbot
       posts = posts.sort{|a,b| a.created_utc <=> b.created_utc }
 
       # Persist posts
-      posts.map{|post| @posts.push(post, dryrun: dryrun) }
-
-      nil
+      posts.each{|post| @posts.push(post, dryrun: dryrun) }
     end
 
     def push(post, dryrun:nil)
