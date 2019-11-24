@@ -8,11 +8,12 @@ RSpec.describe Brutalismbot::Client do
   end
 
   context "#pull" do
-    let(:posts) { [Brutalismbot::Reddit::Post.stub] }
+    let(:post) { Brutalismbot::Reddit::Post.stub }
 
     it "should pull the latest posts" do
-      expect(subject.reddit).to receive(:list).and_return(posts)
-      expect(subject.posts).to  receive(:push).with(posts.first, dryrun: nil)
+      stub_request(:get, "https://www.reddit.com/r/brutalism/new.json").to_return(body: {data: {children: [post]}}.to_json)
+      expect(subject.posts).to receive(:max_time).and_return post.created_utc.to_i - 86400
+      expect(subject.posts).to receive(:push).once
       subject.pull
     end
   end
