@@ -25,12 +25,13 @@ module Brutalismbot
       end
 
       def push(post, dryrun:nil)
-        uri = URI.parse(webhook_url)
+        body = post.to_slack.to_json
+        uri  = URI.parse(webhook_url)
         Brutalismbot.logger.info("POST #{"DRYRUN " if dryrun}#{uri}")
         unless dryrun
           ssl = uri.scheme == "https"
           req = Net::HTTP::Post.new(uri, "content-type" => "application/json")
-          req.body = post.to_slack.to_json
+          req.body = body
           Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
             http.request(req)
           end

@@ -61,6 +61,7 @@ module Brutalismbot
       end
 
       def to_slack
+        raise Error.new("Post has no URL") if url.nil?
         {
           blocks: [
             {
@@ -87,6 +88,7 @@ module Brutalismbot
       end
 
       def to_twitter
+        raise Error.new("Post has no URL") if url.nil?
         [title, permalink].join("\n")
       end
     end
