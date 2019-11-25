@@ -22,7 +22,11 @@ module Brutalismbot
           request  = Net::HTTP::Get.new(uri, "user-agent" => @user_agent)
           response = JSON.parse(http.request(request).body)
           children = response.dig("data", "children") || []
-          children.each{|child| yield Post.new(child) }
+          children.each do |child|
+            post = Post.new(child)
+            Brutalismbot.logger.warn("NO PHOTO URL for #{post.permalink}") if post.url.nil?
+            yield post
+          end
         end
       end
 
