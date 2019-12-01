@@ -61,34 +61,49 @@ module Brutalismbot
       end
 
       def to_slack
-        raise Error.new("Post has no URL") if url.nil?
         {
-          blocks: [
-            {
-              type: "image",
-              title: {
-                type: "plain_text",
-                text: "/r/brutalism",
-                emoji: true,
+          blocks: unless url.nil?
+            [
+              {
+                type: "image",
+                title: {
+                  type: "plain_text",
+                  text: "/r/brutalism",
+                  emoji: true,
+                },
+                image_url: url,
+                alt_text: title,
               },
-              image_url: url,
-              alt_text: title,
-            },
-            {
-              type: "context",
-              elements: [
-                {
+              {
+                type: "context",
+                elements: [
+                  {
+                    type: "mrkdwn",
+                    text: "<#{permalink}|#{title}>",
+                  },
+                ],
+              },
+            ]
+          else
+            [
+              {
+                type: "section",
+                text: {
                   type: "mrkdwn",
                   text: "<#{permalink}|#{title}>",
                 },
-              ],
-            },
-          ],
+                accessory: {
+                  type: "image",
+                  image_url: "https://brutalismbot.com/logo-red-ppl.png",
+                  alt_text: "/r/brutalism"
+                }
+              }
+            ]
+          end
         }
       end
 
       def to_twitter
-        raise Error.new("Post has no URL") if url.nil?
         [title, permalink].join("\n")
       end
     end
