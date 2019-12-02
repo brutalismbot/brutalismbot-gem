@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    brutalismbot (1.0.0)
+    brutalismbot (1.0.0a0)
       twitter (~> 6.2)
 
 GEM
