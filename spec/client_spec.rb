@@ -3,7 +3,7 @@ RSpec.describe Brutalismbot::Client do
 
   context "#lag_time" do
     it "should return the default lag time" do
-      expect(subject.lag_time).to eq 7200
+      expect(subject.lag_time).to eq 9000
     end
   end
 

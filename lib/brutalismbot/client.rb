@@ -16,7 +16,7 @@ module Brutalismbot
 
     def lag_time
       lag = ENV["BRUTALISMBOT_LAG_TIME"].to_s
-      lag.empty? ? 7200 : lag.to_i
+      lag.empty? ? 9000 : lag.to_i
     end
 
     def pull(min_time:nil, max_time:nil, dryrun:nil)
