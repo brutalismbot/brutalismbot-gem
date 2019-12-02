@@ -11,7 +11,7 @@ module Brutalismbot
           block = -> { [Reddit::Post.stub] } unless block_given?
           items = block.call.map{|x| [client.key_for(x), x.to_h] }.to_h
 
-          client.client.stub_responses :list_objects, -> (context) do
+          client.client.stub_responses :list_objects_v2, -> (context) do
             keys = items.keys.select{|x| x.start_with? context.params[:prefix] }
             {contents: keys.map{|x| {key:x} }}
           end

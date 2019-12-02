@@ -10,7 +10,7 @@ RSpec.describe Brutalismbot::S3::Prefix do
   end
 
   before do
-    client.stub_responses :list_objects, -> (context) {
+    client.stub_responses :list_objects_v2, -> (context) {
       {
         contents: [
           {key: "data/test/1"},
