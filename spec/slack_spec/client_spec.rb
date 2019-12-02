@@ -47,8 +47,9 @@ RSpec.describe Brutalismbot::Slack::Client do
     let(:body) { auths.first.to_json }
 
     it "should remove an auth from storage" do
-      expect(subject.bucket).to receive(:delete_objects).with(delete: {objects: [{key: key}]})
-      subject.uninstall(auths.first)
+      expect(subject.uninstall(auths.first).map(&:to_h)).to eq [
+        version_id: subject.key_for(auths.first),
+      ]
     end
   end
 end

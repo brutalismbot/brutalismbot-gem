@@ -20,6 +20,10 @@ module Brutalismbot
             {body: StringIO.new(items.fetch(context.params[:key]).to_json)}
           end
 
+          client.client.stub_responses :delete_object, -> (context) do
+            {version_id: context.params[:key]}
+          end
+
           client
         end
       end

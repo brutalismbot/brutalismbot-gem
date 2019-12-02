@@ -42,7 +42,7 @@ module Brutalismbot
       def uninstall(auth, dryrun:nil)
         prefix = File.join(@prefix, "team=#{auth.team_id}/")
         Brutalismbot.logger.info("LIST s3://#{@bucket.name}/#{prefix}*")
-        @bucket.objects(prefix: prefix).each do |object|
+        @bucket.objects(prefix: prefix).map do |object|
           Brutalismbot.logger.info("DELETE #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{object.key}")
           object.delete unless dryrun
         end
