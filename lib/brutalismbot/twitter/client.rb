@@ -35,8 +35,8 @@ module Brutalismbot
         uri    = URI.parse(post.url)
         Brutalismbot.logger.info("GET #{uri}")
         uri.open do |media|
-          @client.update_with_media(status, media) unless dryrun
-        end
+          @client.update_with_media(status, media)
+        end unless dryrun
       end
     end
   end
