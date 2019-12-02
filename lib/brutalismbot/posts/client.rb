@@ -35,7 +35,7 @@ module Brutalismbot
         Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{prefix}*")
 
         # Go up a level in prefix if no keys found
-        until (keys = @bucket.objects(prefix: prefix)).any?
+        until (keys = @bucket.objects(prefix: prefix)).any? || prefix == @prefix
           prefix = prefix.split(/[^\/]+\/\z/).first
           Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{prefix}*")
         end
@@ -46,6 +46,7 @@ module Brutalismbot
 
       def max_time
         max_key.key[/(\d+).json\z/, -1].to_i
+      rescue NoMethodError
       end
 
       def push(post, dryrun:nil)
