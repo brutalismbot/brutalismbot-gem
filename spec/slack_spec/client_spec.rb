@@ -4,7 +4,7 @@ RSpec.describe Brutalismbot::Slack::Client do
   end
 
   subject do
-    Brutalismbot::Slack::Client.stub { auths }
+    Brutalismbot::Slack::Client.stub auths
   end
 
   context "#install" do

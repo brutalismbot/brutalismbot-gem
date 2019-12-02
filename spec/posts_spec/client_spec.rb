@@ -8,7 +8,7 @@ RSpec.describe Brutalismbot::Posts::Client do
   end
 
   subject do
-    Brutalismbot::Posts::Client.stub { posts }
+    Brutalismbot::Posts::Client.stub posts
   end
 
   before do
