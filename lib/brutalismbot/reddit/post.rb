@@ -61,45 +61,51 @@ module Brutalismbot
       end
 
       def to_slack
+        url.nil? ? to_slack_text : to_slack_image
+      end
+
+      def to_slack_image
         {
-          blocks: unless url.nil?
-            [
-              {
-                type: "image",
-                title: {
-                  type: "plain_text",
-                  text: "/r/brutalism",
-                  emoji: true,
-                },
-                image_url: url,
-                alt_text: title,
+          blocks: [
+            {
+              type: "image",
+              title: {
+                type: "plain_text",
+                text: "/r/brutalism",
+                emoji: true,
               },
-              {
-                type: "context",
-                elements: [
-                  {
-                    type: "mrkdwn",
-                    text: "<#{permalink}|#{title}>",
-                  },
-                ],
-              },
-            ]
-          else
-            [
-              {
-                type: "section",
-                text: {
+              image_url: url,
+              alt_text: title,
+            },
+            {
+              type: "context",
+              elements: [
+                {
                   type: "mrkdwn",
                   text: "<#{permalink}|#{title}>",
                 },
-                accessory: {
-                  type: "image",
-                  image_url: "https://brutalismbot.com/logo-red-ppl.png",
-                  alt_text: "/r/brutalism"
-                }
-              }
-            ]
-          end
+              ],
+            },
+          ],
+        }
+      end
+
+      def to_slack_text
+        {
+          blocks: [
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: "<#{permalink}|#{title}>",
+              },
+              accessory: {
+                type: "image",
+                image_url: "https://brutalismbot.com/logo-red-ppl.png",
+                alt_text: "/r/brutalism",
+              },
+            },
+          ],
         }
       end
 

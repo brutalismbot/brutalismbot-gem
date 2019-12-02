@@ -3,7 +3,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
   let(:time_1) { Time.at 1234567890 }
   let(:time_2) { Time.at 1234567900 }
 
-  let :slack do
+  let :slack_image do
     {
       blocks: [
         {
@@ -24,6 +24,25 @@ RSpec.describe Brutalismbot::Reddit::Post do
               type: "mrkdwn",
             },
           ],
+        },
+      ],
+    }
+  end
+
+  let :slack_text do
+    {
+      blocks: [
+        {
+          type: "section",
+          accessory: {
+            alt_text: "/r/brutalism",
+            image_url: "https://brutalismbot.com/logo-red-ppl.png",
+            type: "image",
+          },
+          text: {
+            text: "<https://reddit.com/r/brutalism/comments/abcdef/test/|Post to /r/brutalism>",
+            type: "mrkdwn",
+          },
         },
       ],
     }
@@ -88,8 +107,13 @@ RSpec.describe Brutalismbot::Reddit::Post do
   end
 
   context "#to_slack" do
-    it "should return the Slack message" do
-      expect(subject.to_slack).to eq slack
+    it "should return the Slack message with image" do
+      expect(subject.to_slack).to eq slack_image
+    end
+
+    it "should return the Slack message with text" do
+      allow(subject).to receive(:url).and_return nil
+      expect(subject.to_slack).to eq slack_text
     end
   end
 

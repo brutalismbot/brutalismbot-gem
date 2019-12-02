@@ -21,15 +21,21 @@ module Brutalismbot
 
       def push(post, dryrun:nil)
         Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}twitter://@brutalismbot")
+        method = post.url.nil? ? :push_text : :push_image
+        send(method, post, dryrun: dryrun)
+      end
+
+      def push_text(post, dryrun:nil)
         status = post.to_twitter
-        if post.url.nil?
-          @client.update(status) unless dryrun
-        else
-          uri = URI.parse(post.url)
-          Brutalismbot.logger.info("GET #{uri}")
-          uri.open do |media|
-            @client.update_with_media(status, media) unless dryrun
-          end
+        @client.update(status) unless dryrun
+      end
+
+      def push_image(post, dryrun:nil)
+        status = post.to_twitter
+        uri    = URI.parse(post.url)
+        Brutalismbot.logger.info("GET #{uri}")
+        uri.open do |media|
+          @client.update_with_media(status, media) unless dryrun
         end
       end
     end
