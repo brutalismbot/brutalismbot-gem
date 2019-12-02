@@ -40,9 +40,11 @@ module Brutalismbot
       end
 
       def uninstall(auth, dryrun:nil)
-        key = key_for(auth)
-        Brutalismbot.logger.info("DELETE #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
-        @bucket.delete_objects(delete: {objects: [{key: key}]}) unless dryrun
+        prefix = File.join(@prefix, "team=#{auth.team_id}/")
+        @bucket.objects(prefix: prefix).each do |object|
+          Brutalismbot.logger.info("DELETE #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{object.key}")
+          object.delete unless dryrun
+        end
       end
     end
   end
