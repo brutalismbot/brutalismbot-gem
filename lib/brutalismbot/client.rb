@@ -19,15 +19,18 @@ module Brutalismbot
       lag.empty? ? 9000 : lag.to_i
     end
 
-    def pull(min_time:nil, max_time:nil, dryrun:nil)
+    def pull(limit:nil, min_time:nil, max_time:nil, dryrun:nil)
       # Get time window for new posts
       min_time ||= @posts.max_time
       max_time ||= Time.now.utc.to_i - lag_time
 
       # Get posts
       posts = @reddit.list(:new)
+
+      # Filter, sort, and limit
       posts = posts.select{|post| post.created_between?(min_time, max_time) }
       posts = posts.sort{|a,b| a.created_utc <=> b.created_utc }
+      posts = posts.slice(0, limit) unless limit.nil?
 
       # Persist posts
       posts.each{|post| @posts.push(post, dryrun: dryrun) }
