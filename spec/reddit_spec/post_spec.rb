@@ -94,6 +94,12 @@ RSpec.describe Brutalismbot::Reddit::Post do
     end
   end
 
+  context "#inspect" do
+    it "should show the permalink on inspection" do
+      expect(subject.inspect).to eq "#<Brutalismbot::Reddit::Post /r/brutalism/comments/abcdef/test/>"
+    end
+  end
+
   context "#permalink" do
     it "should return the permalink" do
       expect(subject.permalink).to eq "https://reddit.com/r/brutalism/comments/abcdef/test/"

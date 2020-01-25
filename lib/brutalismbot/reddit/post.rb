@@ -22,16 +22,20 @@ module Brutalismbot
         Time.at(data["created_utc"].to_i).utc
       end
 
-      def fullname
-        "#{kind}_#{id}"
-      end
-
       def data
         @item.fetch("data", {})
       end
 
+      def fullname
+        "#{kind}_#{id}"
+      end
+
       def id
         data["id"]
+      end
+
+      def inspect
+        "#<#{self.class} #{data["permalink"]}>"
       end
 
       def kind
@@ -48,16 +52,6 @@ module Brutalismbot
 
       def title
         CGI.unescapeHTML(data["title"])
-      end
-
-      def url
-        images = data.dig("preview", "images") || {}
-        source = images.map{|x| x["source"] }.compact.max do |a,b|
-          a.slice("width", "height").values <=> b.slice("width", "height").values
-        end
-        CGI.unescapeHTML(source.dig("url"))
-      rescue NoMethodError
-        data["media_metadata"]&.values&.first&.dig("s", "u")
       end
 
       def to_slack
@@ -111,6 +105,16 @@ module Brutalismbot
 
       def to_twitter
         [title, permalink].join("\n")
+      end
+
+      def url
+        images = data.dig("preview", "images") || {}
+        source = images.map{|x| x["source"] }.compact.max do |a,b|
+          a.slice("width", "height").values <=> b.slice("width", "height").values
+        end
+        CGI.unescapeHTML(source.dig("url"))
+      rescue NoMethodError
+        data["media_metadata"]&.values&.first&.dig("s", "u")
       end
     end
   end
