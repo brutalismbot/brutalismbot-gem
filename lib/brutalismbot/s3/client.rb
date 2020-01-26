@@ -14,10 +14,10 @@ module Brutalismbot
         @prefix = prefix
       end
 
-      def list(options = {}, &block)
-        Brutalismbot.logger.info("LIST s3://#{@bucket.name}/#{@prefix}*")
-        prefix = @bucket.objects({prefix: @prefix}.merge(options))
-        Prefix.new(prefix, &block)
+      def list(**options, &block)
+        options[:prefix] ||= options.delete(:key) || @prefix
+        Brutalismbot.logger.info("LIST s3://#{@bucket.name}/#{options[:prefix]}*")
+        Prefix.new(@bucket.objects(options), &block)
       end
     end
   end

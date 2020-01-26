@@ -24,8 +24,8 @@ module Brutalismbot
         File.join(@prefix, auth.path)
       end
 
-      def list(options = {})
-        super(options) do |object|
+      def list(**options)
+        super(**options) do |object|
           Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{object.key}")
           Auth.parse(object.get.body.read)
         end
