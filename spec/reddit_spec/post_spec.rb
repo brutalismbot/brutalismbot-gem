@@ -3,6 +3,17 @@ RSpec.describe Brutalismbot::Reddit::Post do
   let(:time_1) { Time.at 1234567890 }
   let(:time_2) { Time.at 1234567900 }
 
+  let :s3 do
+    {
+      bucket: "brutalismbot",
+      key: "data/test/#{subject.path}",
+      body: subject.to_json,
+      metadata: {
+        id: subject.id,
+      }
+    }
+  end
+
   let :slack_image do
     {
       blocks: [
@@ -109,6 +120,12 @@ RSpec.describe Brutalismbot::Reddit::Post do
   context "#title" do
     it "should return the title" do
       expect(subject.title).to eq "Post to /r/brutalism"
+    end
+  end
+
+  context "#to_s3" do
+    it "should return the S3 put_object input" do
+      expect(subject.to_s3 bucket: "brutalismbot", prefix: "data/test/").to eq s3
     end
   end
 

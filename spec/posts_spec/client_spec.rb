@@ -52,10 +52,19 @@ RSpec.describe Brutalismbot::Posts::Client do
     let(:body) { posts.first.to_json }
 
     it "should push the post to storage" do
-      expect(subject.bucket).to receive(:put_object).with(key: key, body: body)
+      expect(subject.bucket).to receive(:put_object).with(
+        key:  key,
+        body: body,
+        metadata: {
+          id: posts.first.id,
+        },
+      )
       expect(subject.push(posts.first)).to eq(
         bucket: subject.bucket.name,
         key:    subject.key_for(posts.first),
+        metadata: {
+          id: posts.first.id,
+        },
       )
     end
   end

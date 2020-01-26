@@ -54,6 +54,17 @@ module Brutalismbot
         CGI.unescapeHTML(data["title"])
       end
 
+      def to_s3(bucket:, prefix:nil)
+        {
+          bucket: bucket,
+          key: File.join(*[prefix, path].compact),
+          body: to_json,
+          metadata: {
+            id: id,
+          },
+        }
+      end
+
       def to_slack
         url.nil? ? to_slack_text : to_slack_image
       end

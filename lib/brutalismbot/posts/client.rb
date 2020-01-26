@@ -50,10 +50,10 @@ module Brutalismbot
       end
 
       def push(post, dryrun:nil)
-        key = key_for(post)
-        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
-        @bucket.put_object(key: key, body: post.to_json) unless dryrun
-        {bucket: @bucket.name, key: key}
+        options = post.to_s3(bucket: @bucket.name, prefix: @prefix)
+        Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{options[:bucket]}/#{options[:key]}")
+        @bucket.put_object(**options.slice(:key, :body, :metadata)) unless dryrun
+        options.slice(:bucket, :key, :metadata)
       end
     end
   end
