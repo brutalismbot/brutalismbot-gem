@@ -53,7 +53,10 @@ RSpec.describe Brutalismbot::Posts::Client do
 
     it "should push the post to storage" do
       expect(subject.bucket).to receive(:put_object).with(key: key, body: body)
-      subject.push(posts.first)
+      expect(subject.push(posts.first)).to eq(
+        bucket: subject.bucket.name,
+        key:    subject.key_for(posts.first),
+      )
     end
   end
 end

@@ -33,7 +33,7 @@ module Brutalismbot
       posts = posts.slice(0, limit) unless limit.nil?
 
       # Persist posts
-      posts.each{|post| @posts.push(post, dryrun: dryrun) }
+      posts.map{|post| @posts.push(post, dryrun: dryrun) }
     end
 
     def push(post, dryrun:nil)

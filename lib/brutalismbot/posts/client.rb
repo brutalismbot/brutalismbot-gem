@@ -53,6 +53,7 @@ module Brutalismbot
         key = key_for(post)
         Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{@bucket.name}/#{key}")
         @bucket.put_object(key: key, body: post.to_json) unless dryrun
+        {bucket: @bucket.name, key: key}
       end
     end
   end
