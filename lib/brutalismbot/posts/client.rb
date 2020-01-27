@@ -18,6 +18,10 @@ module Brutalismbot
         File.join(@prefix, post.path)
       end
 
+      def get(key)
+        super {|object| Reddit::Post.parse(object.get.body.read) }
+      end
+
       def last
         Reddit::Post.parse(max_key.get.body.read)
       end

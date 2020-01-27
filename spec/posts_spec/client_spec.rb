@@ -23,6 +23,12 @@ RSpec.describe Brutalismbot::Posts::Client do
     end
   end
 
+  context "#get" do
+    it "should return a post" do
+      expect(subject.get(subject.key_for posts.first).id).to eq posts.first.id
+    end
+  end
+
   context "#last" do
     it "should return the last post" do
       expect(subject.last.id).to eq posts.last.id

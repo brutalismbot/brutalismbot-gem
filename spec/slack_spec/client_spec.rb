@@ -23,6 +23,12 @@ RSpec.describe Brutalismbot::Slack::Client do
     end
   end
 
+  context "#get" do
+    it "should return an auth" do
+      expect(subject.get(subject.key_for auths.first).path).to eq auths.first.path
+    end
+  end
+
   context "#list" do
     it "should return a prefix listing" do
       expect(subject.list.map(&:path)).to eq auths.map(&:path)

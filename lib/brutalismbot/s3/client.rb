@@ -14,8 +14,14 @@ module Brutalismbot
         @prefix = prefix
       end
 
+      def get(key, &block)
+        Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{key}")
+        object = @bucket.object(key)
+        block_given? ? yield(object) : object
+      end
+
       def list(**options, &block)
-        options[:prefix] ||= options.delete(:key) || @prefix
+        options[:prefix] ||= @prefix
         Brutalismbot.logger.info("LIST s3://#{@bucket.name}/#{options[:prefix]}*")
         Prefix.new(@bucket.objects(options), &block)
       end

@@ -24,6 +24,10 @@ module Brutalismbot
         File.join(@prefix, auth.path)
       end
 
+      def get(key)
+        super {|object| Auth.parse(object.get.body.read) }
+      end
+
       def list(**options)
         super(**options) do |object|
           Brutalismbot.logger.info("GET s3://#{@bucket.name}/#{object.key}")
