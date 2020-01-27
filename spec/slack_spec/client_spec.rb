@@ -3,6 +3,10 @@ RSpec.describe Brutalismbot::Slack::Client do
     4.times.map{ Brutalismbot::Slack::Auth.stub }.sort{|a,b| a.team_id <=> b.team_id }
   end
 
+  let :bucket do
+    "brutalismbot"
+  end
+
   subject do
     Brutalismbot::Slack::Client.stub auths
   end
@@ -12,7 +16,11 @@ RSpec.describe Brutalismbot::Slack::Client do
     let(:body) { auths.first.to_json }
 
     it "should add an auth object to storage" do
-      expect(subject.bucket).to receive(:put_object).with(key: key, body: body)
+      expect_any_instance_of(Aws::S3::Client).to receive(:put_object).with(
+        bucket: bucket,
+        key:    key,
+        body:   body,
+      )
       subject.install(auths.first)
     end
   end
@@ -25,7 +33,7 @@ RSpec.describe Brutalismbot::Slack::Client do
 
   context "#get" do
     it "should return an auth" do
-      expect(subject.get(subject.key_for auths.first).path).to eq auths.first.path
+      expect(subject.get(key: subject.key_for(auths.first)).path).to eq auths.first.path
     end
   end
 

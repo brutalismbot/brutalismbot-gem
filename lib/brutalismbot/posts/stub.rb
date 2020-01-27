@@ -10,7 +10,6 @@ module Brutalismbot
         items   = items.map{|x| [key_for(x), x.to_h] }.to_h
 
         @client = Aws::S3::Client.new(stub_responses: true)
-        @bucket = Aws::S3::Bucket.new(name: @bucket.name, client: @client)
 
         @client.stub_responses :list_objects_v2, -> (context) do
           keys = items.keys.select{|x| x.start_with? context.params[:prefix] }

@@ -1,4 +1,8 @@
 RSpec.describe Brutalismbot::Posts::Client do
+  let :bucket do
+    "brutalismbot"
+  end
+
   let :now do
     Time.now + 172800
   end
@@ -25,7 +29,7 @@ RSpec.describe Brutalismbot::Posts::Client do
 
   context "#get" do
     it "should return a post" do
-      expect(subject.get(subject.key_for posts.first).id).to eq posts.first.id
+      expect(subject.get(key: subject.key_for(posts.first)).id).to eq posts.first.id
     end
   end
 
@@ -58,9 +62,10 @@ RSpec.describe Brutalismbot::Posts::Client do
     let(:body) { posts.first.to_json }
 
     it "should push the post to storage" do
-      expect(subject.bucket).to receive(:put_object).with(
-        key:  key,
-        body: body,
+      expect_any_instance_of(Aws::S3::Client).to receive(:put_object).with(
+        bucket: bucket,
+        key:    key,
+        body:   body,
         metadata: {
           id: posts.first.id,
         },

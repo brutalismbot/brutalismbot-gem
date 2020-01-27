@@ -12,12 +12,8 @@ module Brutalismbot
         @item.dig("incoming_webhook", "channel_id")
       end
 
-      def team_id
-        @item.dig("team_id")
-      end
-
-      def webhook_url
-        @item.dig("incoming_webhook", "url")
+      def inspect
+        "#<#{self.class} #{team_id}/#{channel_id}>"
       end
 
       def path
@@ -38,6 +34,14 @@ module Brutalismbot
         else
           Net::HTTPOK.new("1.1", "204", "ok")
         end
+      end
+
+      def team_id
+        @item.dig("team_id")
+      end
+
+      def webhook_url
+        @item.dig("incoming_webhook", "url")
       end
     end
   end
