@@ -24,11 +24,16 @@ module Brutalismbot
         block_given? ? yield(object) : object
       end
 
-      def list(bucket:nil, prefix:nil, **options, &block)
+      def keys(bucket:nil, prefix:nil, **options)
         bucket ||= @bucket
         prefix ||= @prefix
         Brutalismbot.logger.info("LIST s3://#{@bucket}/#{prefix}*")
         result = self.bucket(name: bucket).objects(prefix: prefix, **options)
+        Prefix.new(result)
+      end
+
+      def list(bucket:nil, prefix:nil, **options, &block)
+        result = keys(bucket: bucket, prefix: prefix, **options)
         Prefix.new(result, &block)
       end
     end

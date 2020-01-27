@@ -57,7 +57,7 @@ module Brutalismbot
         options = post.to_s3(bucket: @bucket, prefix: @prefix)
         Brutalismbot.logger.info("PUT #{"DRYRUN " if dryrun}s3://#{options[:bucket]}/#{options[:key]}")
         @client.put_object(**options) unless dryrun
-        options.slice(:bucket, :key, :metadata)
+        options.slice(:bucket, :key)
       end
     end
   end
