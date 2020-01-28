@@ -8,9 +8,6 @@ RSpec.describe Brutalismbot::Reddit::Post do
       bucket: "brutalismbot",
       key: "data/test/#{subject.path}",
       body: subject.to_json,
-      metadata: {
-        id: subject.id,
-      }
     }
   end
 

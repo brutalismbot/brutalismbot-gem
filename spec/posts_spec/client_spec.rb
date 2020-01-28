@@ -66,16 +66,10 @@ RSpec.describe Brutalismbot::Posts::Client do
         bucket: bucket,
         key:    key,
         body:   body,
-        metadata: {
-          id: posts.first.id,
-        },
       )
       expect(subject.push(posts.first)).to eq(
         bucket: subject.bucket.name,
         key:    subject.key_for(posts.first),
-        metadata: {
-          id: posts.first.id,
-        },
       )
     end
   end
