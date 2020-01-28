@@ -40,6 +40,16 @@ module Brutalismbot
         @item.dig("team_id")
       end
 
+      def to_s3(bucket:nil, prefix:nil)
+        bucket ||= ENV["SLACK_S3_BUCKET"] || "brutalismbot"
+        prefix ||= ENV["SLACK_S3_PREFIX"] || "data/v1/auths/"
+        {
+          bucket: bucket,
+          key: File.join(*[prefix, path].compact),
+          body: to_json,
+        }
+      end
+
       def webhook_url
         @item.dig("incoming_webhook", "url")
       end
