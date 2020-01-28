@@ -14,7 +14,7 @@ RSpec.describe Brutalismbot::Client do
       stub_request(:get, "https://www.reddit.com/r/brutalism/new.json").to_return(body: {data: {children: [post]}}.to_json)
       expect(subject.posts).to receive(:max_time).and_return post.created_utc.to_i - 86400
       expect(subject.posts).to receive(:push).once
-      subject.pull
+      subject.pull lag: 1800
     end
   end
 

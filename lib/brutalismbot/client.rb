@@ -19,10 +19,11 @@ module Brutalismbot
       lag.empty? ? 9000 : lag.to_i
     end
 
-    def pull(limit:nil, min_time:nil, max_time:nil, dryrun:nil)
+    def pull(limit:nil, min_time:nil, max_time:nil, lag:nil, dryrun:nil)
       # Get time window for new posts
+      lag      ||= lag_time
       min_time ||= @posts.max_time
-      max_time ||= Time.now.utc.to_i - lag_time
+      max_time ||= Time.now.utc.to_i - lag
 
       # Get posts
       posts = @reddit.list(:new)

@@ -1,4 +1,12 @@
 RSpec.describe Brutalismbot::Slack::Auth do
+  let :s3 do
+    {
+      bucket: "brutalismbot",
+      key: "data/test/auths/#{subject.path}",
+      body: subject.to_json,
+    }
+  end
+
   subject do
     Brutalismbot::Slack::Auth.stub bot_id: "B", channel_id: "C", team_id: "T"
   end
@@ -39,6 +47,12 @@ RSpec.describe Brutalismbot::Slack::Auth do
   context "#team_id" do
     it "should return the team ID" do
       expect(subject.team_id).to eq "T"
+    end
+  end
+
+  context "#to_s3" do
+    it "should return the S3 put_object input" do
+      expect(subject.to_s3 bucket: "brutalismbot", prefix: "data/test/auths/").to eq s3
     end
   end
 

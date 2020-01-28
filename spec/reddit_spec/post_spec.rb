@@ -6,7 +6,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
   let :s3 do
     {
       bucket: "brutalismbot",
-      key: "data/test/#{subject.path}",
+      key: "data/test/posts/#{subject.path}",
       body: subject.to_json,
     }
   end
@@ -122,7 +122,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
 
   context "#to_s3" do
     it "should return the S3 put_object input" do
-      expect(subject.to_s3 bucket: "brutalismbot", prefix: "data/test/").to eq s3
+      expect(subject.to_s3 bucket: "brutalismbot", prefix: "data/test/posts/").to eq s3
     end
   end
 
