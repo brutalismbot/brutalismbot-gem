@@ -27,8 +27,9 @@ jobs:
 
     - name: setup code climate
       uses: amancevice/code-climate-action@v0
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
-        cc_test_reporter_id: ${{ secrets.CC_TEST_REPORTER_ID }}
         command: before-build
 
     - name: rspec
@@ -39,6 +40,7 @@ jobs:
 
     - name: coverage
       uses: amancevice/code-climate-action@v0
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
-        cc_test_reporter_id: ${{ secrets.CC_TEST_REPORTER_ID }}
         command: after-build -t simplecov
