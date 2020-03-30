@@ -1,6 +1,6 @@
 <img alt="brutalismbot" src="https://brutalismbot.com/banner.png"/>
 
-[![Build Status](https://travis-ci.com/brutalismbot/gem.svg)](https://travis-ci.com/brutalismbot/gem)
+[![rspec](https://github.com/brutalismbot/gem/workflows/rspec/badge.svg)](https://github.com/brutalismbot/gem/actions)
 [![Gem Version](https://badge.fury.io/rb/brutalismbot.svg)](http://badge.fury.io/rb/brutalismbot)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/83275cbdbf10f9fd2df7/test_coverage)](https://codeclimate.com/github/brutalismbot/gem/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/83275cbdbf10f9fd2df7/maintainability)](https://codeclimate.com/github/brutalismbot/gem/maintainability)
