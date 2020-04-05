@@ -114,7 +114,9 @@ module Brutalismbot
       end
 
       def to_twitter
-        [title, permalink].join("\n")
+        max = 280 - permalink.length - 1
+        text = title.length <= max ? title : "#{title[0...max - 1]}…"
+        [text, permalink].join("\n")
       end
 
       def url
