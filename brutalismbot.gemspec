@@ -1,4 +1,3 @@
-
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "brutalismbot/version"
@@ -23,6 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry",        "~> 0.12"
   spec.add_development_dependency "rake",       "~> 13.0"
   spec.add_development_dependency "rspec",      "~> 3.8"
-  spec.add_development_dependency "simplecov",  "~> 0.16"
+  spec.add_development_dependency "simplecov",  "< 0.18"
   spec.add_development_dependency "webmock",    "~> 3.6"
 end
