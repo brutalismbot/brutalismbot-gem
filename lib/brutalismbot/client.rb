@@ -26,7 +26,8 @@ module Brutalismbot
       max_time ||= Time.now.utc.to_i - lag
 
       # Get posts
-      posts = @reddit.list(:new)
+      opts  = {q:"self:no AND nsfw:no", restrict_sr: true, sort: "new"}
+      posts = @reddit.list(:search, **opts).all
 
       # Filter, sort, and limit
       posts = posts.select{|post| post.created_between?(min_time, max_time) }
