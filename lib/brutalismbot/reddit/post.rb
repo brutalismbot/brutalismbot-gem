@@ -7,6 +7,11 @@ require "brutalismbot/base"
 module Brutalismbot
   module Reddit
     class Post < Base
+      def initialize(**item)
+        @mime_type = item.delete(:mime_type)
+        super
+      end
+
       def created_after?(time = nil)
         time.nil? || created_utc.to_i > time.to_i
       end
