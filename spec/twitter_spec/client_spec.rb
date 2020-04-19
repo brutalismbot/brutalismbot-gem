@@ -24,7 +24,7 @@ RSpec.describe Brutalismbot::Twitter::Client do
     end
 
     it "should push a text post to Twitter" do
-      allow(post).to receive(:url).and_return nil
+      allow(post).to receive(:is_self?).and_return true
       expect(subject.client).to receive(:update).with(post.to_twitter)
       subject.push(post)
     end

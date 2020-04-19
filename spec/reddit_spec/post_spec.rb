@@ -132,7 +132,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
     end
 
     it "should return the Slack message with text" do
-      allow(subject).to receive(:url).and_return nil
+      allow(subject).to receive(:is_self?).and_return true
       expect(subject.to_slack).to eq slack_text
     end
   end

@@ -38,6 +38,10 @@ module Brutalismbot
         "#<#{self.class} #{data["permalink"]}>"
       end
 
+      def is_self?
+        data["is_self"]
+      end
+
       def kind
         @item["kind"]
       end
@@ -65,7 +69,7 @@ module Brutalismbot
       end
 
       def to_slack
-        url.nil? ? to_slack_text : to_slack_image
+        is_self? ? to_slack_text : to_slack_image
       end
 
       def to_slack_image

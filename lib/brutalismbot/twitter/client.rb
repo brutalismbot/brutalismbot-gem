@@ -20,8 +20,7 @@ module Brutalismbot
       end
 
       def push(post, dryrun:nil)
-        Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}twitter://@brutalismbot")
-        method = post.url.nil? ? :push_text : :push_image
+        method = post.is_self? ? :push_text : :push_image
         send(method, post, dryrun: dryrun)
       end
 
