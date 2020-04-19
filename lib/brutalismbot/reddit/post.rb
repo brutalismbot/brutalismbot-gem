@@ -124,13 +124,7 @@ module Brutalismbot
       end
 
       def url
-        images = data.dig("preview", "images") || {}
-        source = images.map{|x| x["source"] }.compact.max do |a,b|
-          a.slice("width", "height").values <=> b.slice("width", "height").values
-        end
-        CGI.unescapeHTML(source.dig("url"))
-      rescue NoMethodError
-        data["media_metadata"]&.values&.first&.dig("s", "u")
+        data["url"]
       end
     end
   end

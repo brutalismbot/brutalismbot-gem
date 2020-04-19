@@ -144,26 +144,8 @@ RSpec.describe Brutalismbot::Reddit::Post do
   end
 
   context "#url" do
-    let :metapost do
-      Brutalismbot::Reddit::Post.new(
-        "data" => {
-          "media_metadata" => {
-            "?": {
-              "s" => {
-                "u" => "https://example.com",
-              },
-            },
-          },
-        },
-      )
-    end
-
     it "should returns the url from the preview" do
       expect(subject.url).to eq "https://image.host/abcdef.jpg"
-    end
-
-    it "should return url from metadata" do
-      expect(metapost.url).to eq("https://example.com")
     end
   end
 
