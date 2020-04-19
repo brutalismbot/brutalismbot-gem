@@ -24,7 +24,8 @@ module Brutalismbot
           response = JSON.parse(http.request(request).body)
           children = response.dig("data", "children") || []
           children.each do |child|
-            post = Post.new(**child)
+            item = child.transform_keys(&:to_sym)
+            post = Post.new(**item)
             Brutalismbot.logger.warn("NO PHOTO URL for #{post.permalink}") if post.url.nil?
             yield post
           end
