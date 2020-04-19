@@ -16,18 +16,19 @@ module Brutalismbot
               created_utc: created_utc.to_i,
               permalink:   "/r/brutalism/comments/#{permalink_id}/test/",
               title:       "Post to /r/brutalism",
+              url:         "https://image.host/#{image_id}.jpg",
               preview: {
                 images: [
                   {
                     source: {
-                      url: "https://preview.redd.it/#{image_id}.jpg",
+                      url: "https://image.host/#{image_id}.jpg",
                       width: 1000,
                       height: 1000,
                     },
                   },
                   {
                     source: {
-                      url: "https://preview.redd.it/small.jpg",
+                      url: "https://image.host/#{image_id}_small.jpg",
                       width: 500,
                       height: 500,
                     }

@@ -16,7 +16,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
       blocks: [
         {
           alt_text:  "Post to /r/brutalism",
-          image_url: "https://preview.redd.it/abcdef.jpg",
+          image_url: "https://image.host/abcdef.jpg",
           type:      "image",
           title: {
             emoji: true,
@@ -159,7 +159,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
     end
 
     it "should returns the url from the preview" do
-      expect(subject.url).to eq "https://preview.redd.it/abcdef.jpg"
+      expect(subject.url).to eq "https://image.host/abcdef.jpg"
     end
 
     it "should return url from metadata" do
