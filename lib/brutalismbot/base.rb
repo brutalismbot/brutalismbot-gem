@@ -5,7 +5,7 @@ module Brutalismbot
   module Parser
     def parse(source, opts = {})
       item = JSON.parse(source, opts)
-      new(**item)
+      new(**item.transform_keys(&:to_sym))
     end
   end
 
