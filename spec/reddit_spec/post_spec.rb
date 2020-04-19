@@ -134,6 +134,13 @@ RSpec.describe Brutalismbot::Reddit::Post do
     end
   end
 
+  context "#mime_type=" do
+    it "should set the @mime_type" do
+      subject.mime_type = "image/png"
+      expect(subject.mime_type).to eq "image/png"
+    end
+  end
+
   context "#permalink" do
     it "should return the permalink" do
       expect(subject.permalink).to eq "https://reddit.com/r/brutalism/comments/abcdef/test/"

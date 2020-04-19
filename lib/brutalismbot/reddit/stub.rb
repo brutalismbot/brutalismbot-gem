@@ -4,13 +4,12 @@ module Brutalismbot
   module Reddit
     class Post
       class << self
-        def stub(created_utc:nil, post_id:nil, permalink_id:nil, image_id:nil, mime_type:nil)
+        def stub(created_utc:nil, post_id:nil, permalink_id:nil, image_id:nil)
           created_utc  ||= Time.now.utc - rand(86400) - 86400
           post_id      ||= SecureRandom.alphanumeric(6).downcase
           permalink_id ||= SecureRandom.alphanumeric.downcase
           image_id     ||= SecureRandom.alphanumeric
           new(
-            mime_type: mime_type,
             kind: "t3",
             data: {
               id:          post_id,
