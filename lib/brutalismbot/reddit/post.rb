@@ -67,7 +67,7 @@ module Brutalismbot
       end
 
       def mime_type
-        @mime ||= begin
+        @mime_type ||= begin
           uri = URI.parse(data["url"])
           ssl = uri.scheme == "https"
           Brutalismbot.logger.info("HEAD #{uri}")
