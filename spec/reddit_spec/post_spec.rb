@@ -108,6 +108,32 @@ RSpec.describe Brutalismbot::Reddit::Post do
     end
   end
 
+  context "#media_uri" do
+    it "should return the #media_url as a URI instance" do
+      allow(subject).to receive(:media_url).and_return "https://image.host/abcdef.jpg"
+      expect(subject.media_uri).to eq URI.parse("https://image.host/abcdef.jpg")
+    end
+  end
+
+  context "#media_url" do
+    it "should return the #url" do
+      allow(subject).to receive(:mime_type).and_return "image/jpeg"
+      expect(subject.media_url).to eq subject.url
+    end
+
+    it "should return the preview" do
+      allow(subject).to receive(:mime_type).and_return "text/html; charset=utf-8"
+      expect(subject.media_url).to eq subject.data.dig("preview", "images").first.dig("source", "url")
+    end
+  end
+
+  context "#mime_type" do
+    it "should return value of the Content-Type header of #url" do
+      stub_request(:head, subject.url).to_return(headers: {"Content-Type" => "image/jpeg"})
+      expect(subject.mime_type).to eq "image/jpeg"
+    end
+  end
+
   context "#permalink" do
     it "should return the permalink" do
       expect(subject.permalink).to eq "https://reddit.com/r/brutalism/comments/abcdef/test/"
@@ -128,6 +154,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
 
   context "#to_slack" do
     it "should return the Slack message with image" do
+      allow(subject).to receive(:mime_type).and_return "image/jpeg"
       expect(subject.to_slack).to eq slack_image
     end
 
@@ -140,12 +167,6 @@ RSpec.describe Brutalismbot::Reddit::Post do
   context "#to_twitter" do
     it "should return the Twitter message" do
       expect(subject.to_twitter).to eq twitter
-    end
-  end
-
-  context "#url" do
-    it "should returns the url from the preview" do
-      expect(subject.url).to eq "https://image.host/abcdef.jpg"
     end
   end
 

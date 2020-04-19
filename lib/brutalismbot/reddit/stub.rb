@@ -21,14 +21,14 @@ module Brutalismbot
                 images: [
                   {
                     source: {
-                      url: "https://image.host/#{image_id}.jpg",
+                      url: "https://preview.image.host/#{image_id}_large.jpg",
                       width: 1000,
                       height: 1000,
                     },
                   },
                   {
                     source: {
-                      url: "https://image.host/#{image_id}_small.jpg",
+                      url: "https://preview.image.host/#{image_id}_small.jpg",
                       width: 500,
                       height: 500,
                     }

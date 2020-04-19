@@ -1,5 +1,6 @@
 require "forwardable"
 require "json"
+require "net/http"
 
 require "brutalismbot/base"
 
@@ -46,6 +47,37 @@ module Brutalismbot
         @item["kind"]
       end
 
+      def media_uri
+        URI.parse(media_url)
+      end
+
+      def media_url
+        # Use URL if it's an image
+        if mime_type.start_with?("image/")
+          data["url"]
+
+        # Extract preview image URL
+        else
+          images = data.dig("preview", "images") || {}
+          source = images.map{|x| x["source"] }.compact.max do |a,b|
+            a.slice("width", "height").values <=> b.slice("width", "height").values
+          end
+          CGI.unescape_html(source["url"])
+        end
+      end
+
+      def mime_type
+        @mime ||= begin
+          uri = URI.parse(data["url"])
+          ssl = uri.scheme == "https"
+          Brutalismbot.logger.info("HEAD #{uri}")
+          Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
+            req = Net::HTTP::Head.new(uri)
+            http.request(req)["Content-Type"]
+          end
+        end
+      end
+
       def path
         created_utc.strftime("year=%Y/month=%Y-%m/day=%Y-%m-%d/%s.json")
       end
@@ -82,7 +114,7 @@ module Brutalismbot
                 text: "/r/brutalism",
                 emoji: true,
               },
-              image_url: url,
+              image_url: media_url,
               alt_text: title,
             },
             {

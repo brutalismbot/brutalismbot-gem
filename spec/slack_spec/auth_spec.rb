@@ -34,11 +34,13 @@ RSpec.describe Brutalismbot::Slack::Auth do
     let(:post) { Brutalismbot::Reddit::Post.stub }
 
     it "should push a post to the workspace" do
+      allow(post).to receive(:mime_type).and_return "image/jpeg"
       expect_any_instance_of(Net::HTTP).to receive(:request).and_return ok
       expect(subject.push(post)).to eq ok
     end
 
     it "should NOT push a post to the workspace" do
+      allow(post).to receive(:mime_type).and_return "image/jpeg"
       expect_any_instance_of(Net::HTTP).not_to receive(:request)
       subject.push post, dryrun: true
     end
