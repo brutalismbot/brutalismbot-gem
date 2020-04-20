@@ -14,16 +14,11 @@ module Brutalismbot
       @twitter = twitter || Twitter::Client.new
     end
 
-    def lag_time
-      lag = ENV["BRUTALISMBOT_LAG_TIME"].to_s
-      lag.empty? ? 9000 : lag.to_i
-    end
-
-    def pull(limit:nil, min_time:nil, max_time:nil, lag:nil, dryrun:nil)
+    def pull(limit:nil, min_time:nil, max_time:nil, min_age:nil, dryrun:nil)
       # Get time window for new posts
-      lag      ||= lag_time
+      min_age  ||= 9000
       min_time ||= @posts.max_time
-      max_time ||= Time.now.utc.to_i - lag
+      max_time ||= Time.now.utc.to_i - min_age.to_i
 
       # Get posts
       opts  = {q:"self:no AND nsfw:no", restrict_sr: true, sort: "new"}

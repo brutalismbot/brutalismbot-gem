@@ -1,12 +1,6 @@
 RSpec.describe Brutalismbot::Client do
   subject { Brutalismbot::Client.stub }
 
-  context "#lag_time" do
-    it "should return the default lag time" do
-      expect(subject.lag_time).to eq 9000
-    end
-  end
-
   context "#pull" do
     let(:post) { Brutalismbot::Reddit::Post.stub }
 
@@ -17,7 +11,7 @@ RSpec.describe Brutalismbot::Client do
       stub_request(:get, url).to_return(body: {data: {children: [post]}}.to_json)
       expect(subject.posts).to receive(:max_time).and_return post.created_utc.to_i - 86400
       expect(subject.posts).to receive(:push).once
-      subject.pull lag: 1800
+      subject.pull min_age: 1800
     end
   end
 
