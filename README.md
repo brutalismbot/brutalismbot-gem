@@ -1,9 +1,9 @@
 <img alt="brutalismbot" src="https://brutalismbot.com/banner.png"/>
 
-[![rspec](https://github.com/brutalismbot/gem/workflows/rspec/badge.svg)](https://github.com/brutalismbot/gem/actions)
-[![Gem Version](https://badge.fury.io/rb/brutalismbot.svg)](http://badge.fury.io/rb/brutalismbot)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/83275cbdbf10f9fd2df7/test_coverage)](https://codeclimate.com/github/brutalismbot/gem/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/83275cbdbf10f9fd2df7/maintainability)](https://codeclimate.com/github/brutalismbot/gem/maintainability)
+![gem](https://img.shields.io/gem/v/brutalismbot?logo=rubygems&logoColor=eee&style=flat-square)
+[![rspec](https://img.shields.io/github/workflow/status/brutalismbot/gem/rspec?logo=github&style=flat-square)](https://github.com/brutalismbot/gem/actions)
+[![coverage](https://img.shields.io/codeclimate/coverage/brutalismbot/gem?logo=code-climate&style=flat-square)](https://codeclimate.com/github/brutalismbot/gem/test_coverage)
+[![maintainability](https://img.shields.io/codeclimate/maintainability/brutalismbot/gem?logo=code-climate&style=flat-square)](https://codeclimate.com/github/brutalismbot/gem/maintainability)
 
 Brutalismbot RubyGem
 
