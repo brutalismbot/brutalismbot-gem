@@ -14,14 +14,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.files         = Dir["README*", "LICENSE*", "lib/**/*"]
 
-  spec.add_runtime_dependency "twitter", "~> 7.0"
-
-  spec.add_development_dependency "aws-sdk-s3", "~> 1.0"
-  spec.add_development_dependency "bundler",    "~> 2.0"
-  spec.add_development_dependency "dotenv",     "~> 2.7"
-  spec.add_development_dependency "pry",        "~> 0.13"
-  spec.add_development_dependency "rake",       "~> 13.0"
-  spec.add_development_dependency "rspec",      "~> 3.8"
-  spec.add_development_dependency "simplecov",  "< 0.18"
-  spec.add_development_dependency "webmock",    "~> 3.6"
+  spec.add_dependency "twitter", "~> 7.0"
 end
