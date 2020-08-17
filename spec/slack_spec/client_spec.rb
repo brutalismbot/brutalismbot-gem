@@ -45,14 +45,23 @@ RSpec.describe Brutalismbot::Slack::Client do
 
   context "#push" do
     let(:ok)   { Net::HTTPOK.new "1.1", "204", "ok" }
+    let(:auth) { Brutalismbot::Slack::Auth.stub }
     let(:post) { Brutalismbot::Reddit::Post.stub }
 
     before do
       allow_any_instance_of(Brutalismbot::Slack::Auth).to receive(:push).and_return ok
     end
 
-    it "should push a post to all auth'd Slack workspaces" do
-      expect(subject.push(post)).to eq auths.map{ ok }
+    it "should push a post to the workspace" do
+      allow(post).to receive(:mime_type).and_return "image/jpeg"
+      expect_any_instance_of(Net::HTTP).to receive(:request).and_return ok
+      expect(subject.push(body: post.to_slack, webhook_url: auth.webhook_url)).to eq ok
+    end
+
+    it "should NOT push a post to the workspace" do
+      allow(post).to receive(:mime_type).and_return "image/jpeg"
+      expect_any_instance_of(Net::HTTP).not_to receive(:request)
+      subject.push body: post.to_slack, webhook_url: auth.webhook_url, dryrun: true
     end
   end
 

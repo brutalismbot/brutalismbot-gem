@@ -37,11 +37,16 @@ module Brutalismbot
         end
       end
 
-      def push(post, dryrun:nil)
-        list.map do |auth|
-          key = key_for(auth)
-          Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}s3://#{@bucket}/#{key}")
-          auth.push(post, dryrun: dryrun)
+      def push(body:, webhook_url:, dryrun:nil)
+        Brutalismbot.logger.info("POST #{"DRYRUN " if dryrun}#{webhook_url}")
+        unless dryrun
+          uri = URI.parse(webhook_url)
+          ssl = uri.scheme == "https"
+          req = Net::HTTP::Post.new(uri, "content-type" => "application/json")
+          req.body = body.to_json
+          Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) {|http| http.request(req) }
+        else
+          Net::HTTPOK.new("1.1", "204", "ok")
         end
       end
 
