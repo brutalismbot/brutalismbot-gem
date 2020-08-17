@@ -1,34 +1,34 @@
 RSpec.describe Brutalismbot::Twitter::Client do
   let(:post) { Brutalismbot::Reddit::Post.stub }
 
-  let :file do
-    file = Tempfile.new
-    file.write("FIZZBUZZ")
-    file
+  let :media do
+    Tempfile.new {|file| file.write("FIZZBUZZ") }
   end
 
   before do
-    file.flush
+    media.flush
   end
 
   after do
-    file.close
-    file.unlink
+    media.close
+    media.unlink
   end
 
   context "#push" do
     it "should push an image post to Twitter" do
       allow(post).to receive(:mime_type).and_return "image/jpeg"
-      expect_any_instance_of(URI::HTTPS).to receive(:open).and_yield(file)
-      expect(subject.client).to receive(:update_with_media).with(post.to_twitter, file)
-      subject.push(post)
+      status, media_url = post.to_twitter.slice(:status, :media_url).values
+      expect(URI).to receive(:open).with(media_url).and_yield(media)
+      expect(subject.client).to receive(:update_with_media).with(status, media)
+      subject.push(status: status, media_url: media_url)
     end
 
     it "should push a text post to Twitter" do
       allow(post).to receive(:mime_type).and_return "text/html; charset=utf-8"
       allow(post).to receive(:is_self?).and_return true
-      expect(subject.client).to receive(:update).with(post.to_twitter)
-      subject.push(post)
+      status = post.to_twitter.slice :status
+      expect(subject.client).to receive(:update).with(status)
+      subject.push(status: status)
     end
   end
 end
