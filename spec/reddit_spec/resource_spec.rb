@@ -1,5 +1,5 @@
 RSpec.describe Brutalismbot::Reddit::Resource do
-  include WebMock
+  include WebMock::API
 
   let :posts do
     25.times.map{ Brutalismbot::Reddit::Post.stub }
