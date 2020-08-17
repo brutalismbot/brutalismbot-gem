@@ -29,23 +29,6 @@ RSpec.describe Brutalismbot::Slack::Auth do
     end
   end
 
-  context "#push" do
-    let(:ok)   { Net::HTTPOK.new "1.1", "204", "ok" }
-    let(:post) { Brutalismbot::Reddit::Post.stub }
-
-    it "should push a post to the workspace" do
-      allow(post).to receive(:mime_type).and_return "image/jpeg"
-      expect_any_instance_of(Net::HTTP).to receive(:request).and_return ok
-      expect(subject.push(post)).to eq ok
-    end
-
-    it "should NOT push a post to the workspace" do
-      allow(post).to receive(:mime_type).and_return "image/jpeg"
-      expect_any_instance_of(Net::HTTP).not_to receive(:request)
-      subject.push post, dryrun: true
-    end
-  end
-
   context "#team_id" do
     it "should return the team ID" do
       expect(subject.team_id).to eq "T"
