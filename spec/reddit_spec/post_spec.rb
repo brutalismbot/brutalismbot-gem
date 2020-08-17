@@ -57,10 +57,13 @@ RSpec.describe Brutalismbot::Reddit::Post do
   end
 
   let :twitter do
-    <<~EOS.strip
-      Post to /r/brutalism
-      https://reddit.com/r/brutalism/comments/abcdef/test/
-    EOS
+    {
+      media_url: "https://image.host/abcdef.jpg",
+      status: <<~EOS.strip
+        Post to /r/brutalism
+        https://reddit.com/r/brutalism/comments/abcdef/test/
+      EOS
+    }
   end
 
   subject do
@@ -173,6 +176,7 @@ RSpec.describe Brutalismbot::Reddit::Post do
 
   context "#to_twitter" do
     it "should return the Twitter message" do
+      allow(subject).to receive(:mime_type).and_return "image/jpeg"
       expect(subject.to_twitter).to eq twitter
     end
   end

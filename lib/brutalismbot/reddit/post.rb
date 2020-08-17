@@ -108,6 +108,19 @@ module Brutalismbot
         is_self? ? to_slack_text : to_slack_image
       end
 
+      def to_twitter
+        max = 280 - permalink.length - 1
+        status = title.length <= max ? title : "#{title[0...max - 1]}…"
+        status << "\n#{permalink}"
+        {status: status, media_url: is_self? ? nil : media_url}
+      end
+
+      def url
+        data["url"]
+      end
+
+      private
+
       def to_slack_image
         {
           blocks: [
@@ -151,16 +164,6 @@ module Brutalismbot
             },
           ],
         }
-      end
-
-      def to_twitter
-        max = 280 - permalink.length - 1
-        text = title.length <= max ? title : "#{title[0...max - 1]}…"
-        [text, permalink].join("\n")
-      end
-
-      def url
-        data["url"]
       end
     end
   end
