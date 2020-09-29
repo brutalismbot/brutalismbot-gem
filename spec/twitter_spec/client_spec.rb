@@ -16,7 +16,7 @@ RSpec.describe Brutalismbot::Twitter::Client do
     it "should push an image post to Twitter" do
       media_url = post.media_urls.first
       expect(URI).to receive(:open).with(media_url).and_return(media)
-      expect(subject.client).to receive(:update_with_media).with(status, [media]).and_return(OpenStruct.new(id: 1))
+      expect(subject.client).to receive(:update_with_media).with(status, [media], {}).and_return(OpenStruct.new(id: 1))
       subject.push post
     end
   end

@@ -26,7 +26,7 @@ module Brutalismbot
         media.each_slice(4).zip(status).each do |post_media, post_status|
           Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}twitter://@brutalismbot")
           unless dryrun
-            res = @client.update_with_media(post_status, post_media, **opts)
+            res = @client.update_with_media(post_status, post_media, opts)
             opts[:in_reply_to_status_id] = res.id
           end
         end
