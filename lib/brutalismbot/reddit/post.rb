@@ -94,16 +94,6 @@ module Brutalismbot
         CGI.unescapeHTML(data["title"])
       end
 
-      def to_s3(bucket:nil, prefix:nil)
-        bucket ||= ENV["POSTS_S3_BUCKET"] || "brutalismbot"
-        prefix ||= ENV["POSTS_S3_PREFIX"] || "data/v1/posts/"
-        {
-          bucket: bucket,
-          key: File.join(*[prefix, path].compact),
-          body: to_json,
-        }
-      end
-
       def to_slack
         is_self? ? to_slack_text : to_slack_image
       end

@@ -70,6 +70,7 @@ RSpec.describe Brutalismbot::Posts::Client do
       expect(subject.push(posts.first)).to eq(
         bucket: subject.bucket.name,
         key:    subject.key_for(posts.first),
+        url:    posts.first.permalink,
       )
     end
   end
