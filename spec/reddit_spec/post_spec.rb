@@ -3,61 +3,6 @@ RSpec.describe Brutalismbot::Reddit::Post do
   let(:time_1) { Time.at 1234567890 }
   let(:time_2) { Time.at 1234567900 }
 
-  let :slack_image do
-    {
-      blocks: [
-        {
-          alt_text:  "Post to /r/brutalism",
-          image_url: "https://image.host/abcdef.jpg",
-          type:      "image",
-          title: {
-            emoji: true,
-            text:  "/r/brutalism",
-            type:  "plain_text",
-          },
-        },
-        {
-          type: "context",
-          elements: [
-            {
-              text: "<https://reddit.com/r/brutalism/comments/abcdef/test/|Post to /r/brutalism>",
-              type: "mrkdwn",
-            },
-          ],
-        },
-      ],
-    }
-  end
-
-  let :slack_text do
-    {
-      blocks: [
-        {
-          type: "section",
-          accessory: {
-            alt_text: "/r/brutalism",
-            image_url: "https://brutalismbot.com/logo-red-ppl.png",
-            type: "image",
-          },
-          text: {
-            text: "<https://reddit.com/r/brutalism/comments/abcdef/test/|Post to /r/brutalism>",
-            type: "mrkdwn",
-          },
-        },
-      ],
-    }
-  end
-
-  let :twitter do
-    {
-      media_url: "https://image.host/abcdef.jpg",
-      status: <<~EOS.strip
-        Post to /r/brutalism
-        https://reddit.com/r/brutalism/comments/abcdef/test/
-      EOS
-    }
-  end
-
   subject do
     Brutalismbot::Reddit::Post.stub created_utc:  time_1,
                                     image_id:     "abcdef",
@@ -97,42 +42,53 @@ RSpec.describe Brutalismbot::Reddit::Post do
     end
   end
 
+  context "#fullname" do
+    it "returns the fullname" do
+      expect(subject.fullname).to eq "t3_abcdef"
+    end
+  end
+
   context "#inspect" do
     it "should show the permalink on inspection" do
       expect(subject.inspect).to eq "#<Brutalismbot::Reddit::Post /r/brutalism/comments/abcdef/test/>"
     end
   end
 
-  context "#media_uri" do
-    it "should return the #media_url as a URI instance" do
-      allow(subject).to receive(:media_url).and_return "https://image.host/abcdef.jpg"
-      expect(subject.media_uri).to eq URI.parse("https://image.host/abcdef.jpg")
+  context "#is_gallery?" do
+    it "should return true" do
+      subject.data["is_gallery"] = true
+      expect(subject.is_gallery?).to be true
+    end
+
+    it "should return false" do
+      expect(subject.is_gallery?).to be false
     end
   end
 
-  context "#media_url" do
-    it "should return the #url" do
-      allow(subject).to receive(:mime_type).and_return "image/jpeg"
-      expect(subject.media_url).to eq subject.url
+  context "#is_self?" do
+    it "should return true" do
+      subject.data["is_self"] = true
+      expect(subject.is_self?).to be true
     end
 
-    it "should return the preview" do
-      allow(subject).to receive(:mime_type).and_return "text/html; charset=utf-8"
-      expect(subject.media_url).to eq subject.data.dig("preview", "images").first.dig("source", "url")
-    end
-  end
-
-  context "#mime_type" do
-    it "should return value of the Content-Type header of #url" do
-      stub_request(:head, subject.url).to_return(headers: {"Content-Type" => "image/jpeg"})
-      expect(subject.mime_type).to eq "image/jpeg"
+    it "should return false" do
+      expect(subject.is_self?).to be false
     end
   end
 
-  context "#mime_type=" do
-    it "should set the @mime_type" do
-      subject.mime_type = "image/png"
-      expect(subject.mime_type).to eq "image/png"
+  context "#media_urls" do
+    it "should return the gallery URLs" do
+      subject.data["is_gallery"] = true
+      expect(subject.media_urls).to eq %w[https://preview.image.host/abcdef_1.jpg https://preview.image.host/abcdef_2.jpg]
+    end
+
+    it "should return the preview URLs" do
+      expect(subject.media_urls).to eq %w[https://preview.image.host/abcdef_large.jpg]
+    end
+
+    it "should return an empty list" do
+      subject.data.delete "preview"
+      expect(subject.media_urls.empty?).to be true
     end
   end
 
@@ -145,31 +101,6 @@ RSpec.describe Brutalismbot::Reddit::Post do
   context "#title" do
     it "should return the title" do
       expect(subject.title).to eq "Post to /r/brutalism"
-    end
-  end
-
-  context "#to_slack" do
-    it "should return the Slack message with image" do
-      allow(subject).to receive(:mime_type).and_return "image/jpeg"
-      expect(subject.to_slack).to eq slack_image
-    end
-
-    it "should return the Slack message with text" do
-      allow(subject).to receive(:is_self?).and_return true
-      expect(subject.to_slack).to eq slack_text
-    end
-  end
-
-  context "#to_twitter" do
-    it "should return the Twitter message" do
-      allow(subject).to receive(:mime_type).and_return "image/jpeg"
-      expect(subject.to_twitter).to eq twitter
-    end
-  end
-
-  context "#fullname" do
-    it "returns the fullname" do
-      expect(subject.fullname).to eq "t3_abcdef"
     end
   end
 end

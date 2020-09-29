@@ -17,6 +17,18 @@ module Brutalismbot
               permalink:   "/r/brutalism/comments/#{permalink_id}/test/",
               title:       "Post to /r/brutalism",
               url:         "https://image.host/#{image_id}.jpg",
+              media_metadata: {
+                abcdef: {
+                  s: {
+                    u: "https://preview.image.host/#{image_id}_1.jpg",
+                  },
+                },
+                ghijkl: {
+                  s: {
+                    u: "https://preview.image.host/#{image_id}_2.jpg",
+                  },
+                },
+              },
               preview: {
                 images: [
                   {
@@ -26,13 +38,6 @@ module Brutalismbot
                       height: 1000,
                     },
                   },
-                  {
-                    source: {
-                      url: "https://preview.image.host/#{image_id}_small.jpg",
-                      width: 500,
-                      height: 500,
-                    }
-                  }
                 ],
               },
             },

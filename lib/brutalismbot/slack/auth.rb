@@ -21,7 +21,7 @@ module Brutalismbot
       end
 
       def team_id
-        @item.dig("team_id")
+        @item["team_id"] || @item.dig("team", "id")
       end
 
       def to_s3(bucket:nil, prefix:nil)

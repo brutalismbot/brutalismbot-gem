@@ -19,14 +19,32 @@ module Brutalismbot
         end
       end
 
-      def push(status:, media_url:nil, dryrun:nil)
-        if media_url.nil?
+      def push(post, dryrun:nil)
+        status = status_for(post)
+        media  = media_for(post)
+        opts   = {}
+        media.each_slice(4).zip(status).each do |post_media, post_status|
           Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}twitter://@brutalismbot")
-          @client.update(status) unless dryrun
-        else
+          unless dryrun
+            res = @client.update_with_media(post_status, post_media, **opts)
+            opts[:in_reply_to_status_id] = res.id
+          end
+        end
+      end
+
+      private
+
+      def status_for(post)
+        max = 280 - post.permalink.length - 1
+        status = post.title.length <= max ? post.title : "#{post.title[0...max - 1]}…"
+        status << "\n#{post.permalink}"
+        [status]
+      end
+
+      def media_for(post)
+        post.media_urls.map do |media_url|
           Brutalismbot.logger.info("GET #{media_url}")
-          Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}twitter://@brutalismbot")
-          URI.open(media_url) {|media| @client.update_with_media(status, media) } unless dryrun
+          URI.open(media_url)
         end
       end
     end
