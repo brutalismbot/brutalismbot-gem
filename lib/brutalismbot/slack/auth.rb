@@ -24,6 +24,10 @@ module Brutalismbot
         @item["team_id"] || @item.dig("team", "id")
       end
 
+      def team_name
+        @item["team_name"] || @item.dig("team", "name")
+      end
+
       def to_s3(bucket:nil, prefix:nil)
         bucket ||= ENV["SLACK_S3_BUCKET"] || "brutalismbot"
         prefix ||= ENV["SLACK_S3_PREFIX"] || "data/v1/auths/"

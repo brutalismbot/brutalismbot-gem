@@ -35,6 +35,12 @@ RSpec.describe Brutalismbot::Slack::Auth do
     end
   end
 
+  context "#team_name" do
+    it "should return the team name" do
+      expect(subject.team_name).to eq "My Team"
+    end
+  end
+
   context "#to_s3" do
     it "should return the S3 put_object input" do
       expect(subject.to_s3 bucket: "brutalismbot", prefix: "data/test/auths/").to eq s3
