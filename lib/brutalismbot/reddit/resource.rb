@@ -26,8 +26,10 @@ module Brutalismbot
           children.each do |child|
             item = child.transform_keys(&:to_sym)
             post = Post.new(**item)
-            Brutalismbot.logger.warn("NO PHOTO URL for #{post.permalink}") if post.url.nil?
-            yield post
+            unless post.is_self?
+              Brutalismbot.logger.warn("NO MEDIA URLs for #{post.permalink}") if post.media_urls.empty?
+              yield post
+            end
           end
         end
       end
