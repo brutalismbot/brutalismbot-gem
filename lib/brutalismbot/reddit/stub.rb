@@ -22,11 +22,21 @@ module Brutalismbot
                   s: {
                     u: "https://preview.image.host/#{image_id}_1.jpg",
                   },
+                  p: [
+                    {x: 1, y: 1, u: "https://preview.image.host/#{image_id}_1.jpg"},
+                    {x: 2, y: 2, u: "https://preview.image.host/#{image_id}_2.jpg"},
+                    {x: 3, y: 3, u: "https://preview.image.host/#{image_id}_3.jpg"},
+                  ],
                 },
                 ghijkl: {
                   s: {
                     u: "https://preview.image.host/#{image_id}_2.jpg",
                   },
+                  p: [
+                    {x: 1, y: 1, u: "https://preview.image.host/#{image_id}_1.jpg"},
+                    {x: 2, y: 2, u: "https://preview.image.host/#{image_id}_2.jpg"},
+                    {x: 3, y: 3, u: "https://preview.image.host/#{image_id}_3.jpg"},
+                  ],
                 },
               },
               preview: {
