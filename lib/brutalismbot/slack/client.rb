@@ -38,15 +38,14 @@ module Brutalismbot
       end
 
       def push(post, webhook_url:, dryrun:nil)
-        images  = images_for(post)
-        context = context_for(post)
+        blocks = blocks_for(post)
 
         Brutalismbot.logger.info("POST #{"DRYRUN " if dryrun}#{webhook_url}")
         unless dryrun
           uri = URI.parse(webhook_url)
           ssl = uri.scheme == "https"
           req = Net::HTTP::Post.new(uri, "content-type" => "application/json")
-          req.body = { blocks: images + context }.to_json
+          req.body = { blocks: blocks }.to_json
           Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) {|http| http.request(req) }
         else
           Net::HTTPOK.new("1.1", "204", "ok")
@@ -64,33 +63,30 @@ module Brutalismbot
 
       private
 
-      def images_for(post)
+      def blocks_for(post)
         post.media_urls.map do |media_url|
-          {
-            type: "image",
-            title: {
-              type: "plain_text",
-              text: "/r/brutalism",
-              emoji: true,
-            },
-            image_url: media_url,
-            alt_text: post.title,
-          }
-        end
-      end
-
-      def context_for(post)
-        [
-          {
-            type: "context",
-            elements: [
-              {
-                type: "mrkdwn",
-                text: "<#{post.permalink}|#{post.title}>",
+          [
+            {
+              type: "image",
+              title: {
+                type: "plain_text",
+                text: "/r/brutalism",
+                emoji: true,
               },
-            ],
-          },
-        ]
+              image_url: media_url,
+              alt_text: post.title,
+            },
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "mrkdwn",
+                  text: "<#{post.permalink}|#{post.title}>",
+                },
+              ],
+            },
+          ]
+        end.flatten
       end
     end
   end
