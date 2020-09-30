@@ -73,11 +73,11 @@ module Brutalismbot
 
       ##
       # Get media URLs for post
-      def media_urls
+      def media_urls(&block)
         if is_gallery?
-          media_urls_gallery
+          media_urls_gallery(&block)
         elsif preview_images
-          media_urls_preview
+          media_urls_preview(&block)
         else
           []
         end
@@ -93,20 +93,20 @@ module Brutalismbot
 
       ##
       # Get media URLs from gallery
-      def media_urls_gallery
+      def media_urls_gallery(&block)
         media_metadata.values.map do |image|
-          url = image.dig("s", "u")
-          CGI.unescape_html(url)
-        end
+          url = block_given? ? yield(image) : image.dig("s", "u")
+          CGI.unescape_html(url) unless url.nil?
+        end.compact
       end
 
       ##
       # Get media URLs from previews
-      def media_urls_preview
+      def media_urls_preview(&block)
         preview_images.map do |image|
-          url = image.dig("source", "url")
-          CGI.unescape_html(url)
-        end
+          url = block_given? ? yield(image) : image.dig("source", "url")
+          CGI.unescape_html(url) unless url.nil?
+        end.compact
       end
     end
   end
