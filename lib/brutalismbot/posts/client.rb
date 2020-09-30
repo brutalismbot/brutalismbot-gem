@@ -28,7 +28,7 @@ module Brutalismbot
       end
 
       def list(**options)
-        super(**options) do |object|
+        super do |object|
           Brutalismbot.logger.info("GET s3://#{@bucket}/#{object.key}")
           Reddit::Post.parse(object.get.body.read)
         end
