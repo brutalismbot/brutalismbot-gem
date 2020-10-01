@@ -73,17 +73,17 @@ RSpec.describe Brutalismbot::Slack::Client do
 
     it "should push a post to the workspace" do
       expect_any_instance_of(Net::HTTP).to receive(:request).and_return ok
-      expect(subject.push(post, webhook_urls: [auth.webhook_url])).to eq [ok]
+      expect(subject.push(post, auth.webhook_url)).to eq ok
     end
 
     it "should recover from an HTTP error" do
       expect_any_instance_of(Net::HTTP).to receive(:request).and_return err
-      expect(subject.push(post, webhook_urls: [auth.webhook_url])).to eq [err]
+      expect(subject.push(post, auth.webhook_url)).to eq err
     end
 
     it "should NOT push a post to the workspace" do
       expect_any_instance_of(Net::HTTP).not_to receive(:request)
-      subject.push post, webhook_urls: [auth.webhook_url], dryrun: true
+      subject.push post, auth.webhook_url, dryrun: true
     end
   end
 

@@ -38,7 +38,9 @@ module Brutalismbot
       @twitter.push(post, dryrun: dryrun)
 
       # Push to Slack
-      @slack.push(post, dryrun: dryrun)
+      @slack.list.map(&:webhook_url).each do |webhook_url|
+        @slack.push(post, webhook_url, dryrun: dryrun)
+      end
 
       nil
     end

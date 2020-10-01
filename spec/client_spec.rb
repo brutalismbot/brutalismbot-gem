@@ -17,9 +17,11 @@ RSpec.describe Brutalismbot::Client do
 
   context "#push" do
     let(:post) { Brutalismbot::Reddit::Post.stub }
+    let(:auth) { Brutalismbot::Slack::Auth.stub }
 
     it "should push a post to Twitter and Slack" do
-      expect(subject.slack).to   receive(:push).with(post, dryrun: nil)
+      expect(subject.slack).to   receive(:list).and_return [auth]
+      expect(subject.slack).to   receive(:push).with(post, auth.webhook_url, dryrun: nil)
       expect(subject.twitter).to receive(:push).with(post, dryrun: nil)
       subject.push(post)
     end
