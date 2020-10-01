@@ -37,10 +37,10 @@ module Brutalismbot
         end
       end
 
-      def push(post, webhook_url:nil, dryrun:nil)
+      def push(post, webhook_urls:nil, dryrun:nil)
         blocks = blocks_for(post)
 
-        webhook_urls = webhook_url.nil? ? list.map(&:webhook_url) : [webhook_url]
+        webhook_urls ||= list.map(&:webhook_url)
 
         webhook_urls.map do |webhook_url|
           Brutalismbot.logger.info("POST #{"DRYRUN " if dryrun}#{webhook_url}")
@@ -49,10 +49,14 @@ module Brutalismbot
             ssl = uri.scheme == "https"
             req = Net::HTTP::Post.new(uri, "content-type" => "application/json")
             req.body = { blocks: blocks }.to_json
-            Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) {|http| http.request(req) }
+            Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
+              http.request(req)
+            end.tap do |res|
+              Brutalismbot.logger.error("RESPONSE [#{res.code}] #{res.body}") unless res.kind_of?(Net::HTTPSuccess)
+            end
           else
             Net::HTTPOK.new("1.1", "204", "ok")
-          end.tap {|res| res.value }
+          end
         end
       end
 

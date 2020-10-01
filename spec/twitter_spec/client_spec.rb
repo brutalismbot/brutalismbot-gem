@@ -1,5 +1,5 @@
 RSpec.describe Brutalismbot::Twitter::Client do
-  let(:media)  { Tempfile.new {|file| file.write("FIZZBUZZ") } }
+  let(:media)  { Tempfile.new }
   let(:post)   { Brutalismbot::Reddit::Post.stub }
   let(:status) { "#{post.title}\n#{post.permalink}"}
 

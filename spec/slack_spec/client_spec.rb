@@ -44,9 +44,28 @@ RSpec.describe Brutalismbot::Slack::Client do
   end
 
   context "#push" do
-    let(:ok)   { Net::HTTPOK.new "1.1", "204", "ok" }
     let(:auth) { Brutalismbot::Slack::Auth.stub }
     let(:post) { Brutalismbot::Reddit::Post.stub }
+
+    let :ok do
+      sock = Net::BufferedIO.new StringIO.new <<~EOS.rstrip
+        HTTP/1.1 204 No Content\r
+        Connection: close\r
+        Content-Length: 0\r
+      EOS
+      Net::HTTPResponse.read_new(sock)
+    end
+
+    let :err do
+      sock = Net::BufferedIO.new StringIO.new <<~EOS.rstrip
+        HTTP/1.1 404 Not Found\r
+        Connection: close\r
+        Content-Length: #{"no_active_hooks".bytesize}
+        \r
+        no_active_hooks
+      EOS
+      Net::HTTPResponse.read_new(sock).tap {|r| r.reading_body(sock, true) {} }
+    end
 
     before do
       allow_any_instance_of(Brutalismbot::Slack::Auth).to receive(:push).and_return ok
@@ -54,12 +73,17 @@ RSpec.describe Brutalismbot::Slack::Client do
 
     it "should push a post to the workspace" do
       expect_any_instance_of(Net::HTTP).to receive(:request).and_return ok
-      expect(subject.push(post, webhook_url: auth.webhook_url)).to eq [ok]
+      expect(subject.push(post, webhook_urls: [auth.webhook_url])).to eq [ok]
+    end
+
+    it "should recover from an HTTP error" do
+      expect_any_instance_of(Net::HTTP).to receive(:request).and_return err
+      expect(subject.push(post, webhook_urls: [auth.webhook_url])).to eq [err]
     end
 
     it "should NOT push a post to the workspace" do
       expect_any_instance_of(Net::HTTP).not_to receive(:request)
-      subject.push post, webhook_url: auth.webhook_url, dryrun: true
+      subject.push post, webhook_urls: [auth.webhook_url], dryrun: true
     end
   end
 
