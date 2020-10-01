@@ -21,7 +21,7 @@ module Brutalismbot
 
       def push(post, dryrun:nil)
         opts = {}
-        slices_for(post).each_with_index do |slice, index|
+        slices_for(post).each_with_index.map do |slice, index|
           status, media = slice
           Brutalismbot.logger.info("PUSH #{"DRYRUN " if dryrun}twitter://@brutalismbot")
           begin
@@ -30,9 +30,12 @@ module Brutalismbot
           rescue ::Twitter::Error::BadRequest => err
             if err.message =~ /Image file size must be <= \d+ bytes/
               Brutalismbot.logger.warn("IMAGE TOO LARGE - RETRYING WITH PREVIEWS")
-              opts[:in_reply_to_status_id] = push_preview(post, opts, index)
+              res = push_preview(post, opts, index)
+              opts[:in_reply_to_status_id] = res.id
             end
           end unless dryrun
+
+          res&.id
         end
       end
 
@@ -42,7 +45,7 @@ module Brutalismbot
         status, media = slices_for(post) do |i|
           i["p"].max {|a,b|  a["x"] * a["y"] <=> b["x"] * b["y"] }["u"]
         end.to_a[index]
-        @client.update_with_media(status, media, opts).id
+        @client.update_with_media(status, media, opts)
       end
 
       def slices_for(post, &block)
