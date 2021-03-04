@@ -45,7 +45,7 @@ module Brutalismbot
           uri = URI.parse(webhook_url)
           ssl = uri.scheme == "https"
           req = Net::HTTP::Post.new(uri, "content-type" => "application/json")
-          req.body = { blocks: blocks }.to_json
+          req.body = { text: post.title, blocks: blocks }.to_json
           Net::HTTP.start(uri.host, uri.port, use_ssl: ssl) do |http|
             http.request(req)
           end.tap do |res|
