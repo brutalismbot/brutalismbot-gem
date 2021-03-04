@@ -1,7 +1,11 @@
 PATH
   remote: .
   specs:
-    brutalismbot (2.1.0)
+    brutalismbot (3.0.0)
+      aws-sdk-cloudwatch (~> 1.0)
+      aws-sdk-dynamodb (~> 1.0)
+      aws-sdk-s3 (~> 1.0)
+      aws-sdk-secretsmanager (~> 1.0)
       twitter (~> 7.0)
 
 GEM
@@ -11,17 +15,26 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     aws-eventstream (1.1.1)
     aws-partitions (1.431.0)
+    aws-sdk-cloudwatch (1.49.0)
+      aws-sdk-core (~> 3, >= 3.112.0)
+      aws-sigv4 (~> 1.1)
     aws-sdk-core (3.112.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
+    aws-sdk-dynamodb (1.59.0)
+      aws-sdk-core (~> 3, >= 3.112.0)
+      aws-sigv4 (~> 1.1)
     aws-sdk-kms (1.42.0)
       aws-sdk-core (~> 3, >= 3.112.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.89.0)
       aws-sdk-core (~> 3, >= 3.112.0)
       aws-sdk-kms (~> 1)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-secretsmanager (1.45.0)
+      aws-sdk-core (~> 3, >= 3.112.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.2.3)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -107,11 +120,10 @@ PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
-  aws-sdk-s3 (~> 1.0)
   brutalismbot!
   bundler (~> 2.0)
   dotenv (~> 2.7)
-  pry (~> 0.13)
+  pry (~> 0.14)
   rake (~> 13.0)
   rspec (~> 3.8)
   simplecov (~> 0.20)

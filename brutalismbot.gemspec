@@ -14,5 +14,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.files         = Dir["README*", "LICENSE*", "lib/**/*"]
 
-  spec.add_dependency "twitter", "~> 7.0"
+  spec.add_dependency "aws-sdk-cloudwatch",     "~> 1.0"
+  spec.add_dependency "aws-sdk-dynamodb",       "~> 1.0"
+  spec.add_dependency "aws-sdk-s3",             "~> 1.0"
+  spec.add_dependency "aws-sdk-secretsmanager", "~> 1.0"
+  spec.add_dependency "twitter",                "~> 7.0"
 end
