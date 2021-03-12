@@ -17,6 +17,14 @@ module Brutalismbot
         end
       end
 
+      def sns_messages(event, json:false, &block)
+        event&.fetch("Records", []).map do |record|
+          message = record.dig("Sns", "Message")
+          message = json ? JSON.parse(message) : message
+          block_given? ? yield(message) : message
+        end
+      end
+
       class Logger < Logger
         def initialize(context = nil)
           super($stdout)

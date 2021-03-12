@@ -1,6 +1,6 @@
 require "json"
 
-require "brutalismbot/logger"
+require "brutalismbot/logging"
 require "brutalismbot/base/enumerable"
 require "brutalismbot/aws/s3/object"
 

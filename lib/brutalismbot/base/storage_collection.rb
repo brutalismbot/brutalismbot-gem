@@ -15,6 +15,10 @@ module Brutalismbot
         list.each { |item| yield item }
       end
 
+      def <<(item)
+        put(item).first
+      end
+
       def delete(*items)
       end
 

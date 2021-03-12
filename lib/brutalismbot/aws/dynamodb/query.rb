@@ -1,7 +1,8 @@
 require "json"
 
+require "brutalismbot/logging"
 require "brutalismbot/base/enumerable"
-require "brutalismbot/logger"
+require "brutalismbot/aws/dynamodb/item"
 
 module Brutalismbot
   module Aws
@@ -14,20 +15,21 @@ module Brutalismbot
         def initialize(table, **options, &block)
           @table   = table
           @options = options
-          @block   = block || -> (item) { item }
+          @block   = block || -> (object) { object }
         end
 
         def each
           limit = @options.fetch(:limit, -1)
+          pager = -> (**options) do
+            res = execute(**options)
+            res.items[0..limit].each { |item| yield Item.new(item).then(&@block) }
+            limit -= res.count
+            res
+          end
 
-          result = execute(**@options)
-          result.items[0..limit].each { |item| yield item.then(&@block) }
-          limit -= result.count
-
-          until result.last_evaluated_key.nil? || limit <= 0
-            result = execute(**@options, exclusive_start_key: result.last_evaluated_key)
-            result.items[0..limit].each { |item| yield item.then(&@block) }
-            limit -= result.count
+          res = pager.call
+          until res.last_evaluated_key.nil? || limit <= 0
+            res = pager.call(exclusive_start_key: res.last_evaluated_key)
           end
         end
 
@@ -41,14 +43,18 @@ module Brutalismbot
 
         private
 
+        def client_url
+          File.join(@table.client.config.endpoint.to_s, @table.name)
+        end
+
         def one(scan_index_forward:)
-          extra = { limit: 1, scan_index_forward: scan_index_forward }
-          execute(**@options, **extra).items.first&.then(&@block)
+          res = execute(limit: 1, scan_index_forward: scan_index_forward)
+          res.items.map { |item| Item.new(item).then(&@block) }.first
         end
 
         def execute(**options)
-          url = File.join(@table.client.config.endpoint.to_s, @table.name)
-          Brutalismbot.logger.info("QUERY #{ url } #{ options.to_json }")
+          options = { **@options, **options }
+          Brutalismbot.logger.info("QUERY #{ client_url } #{ options.to_json }")
           @table.query(**options)
         end
       end

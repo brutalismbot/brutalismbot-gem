@@ -1,5 +1,5 @@
 require "brutalismbot/version"
-require "brutalismbot/logger"
+require "brutalismbot/logging"
 require "brutalismbot/client"
 
 module Brutalismbot

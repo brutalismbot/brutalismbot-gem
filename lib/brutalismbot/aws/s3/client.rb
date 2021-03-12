@@ -18,11 +18,11 @@ module Brutalismbot
         end
 
         def list_reddit_posts(**options)
-          prefix(prefix: File.join(PREFIX, "posts/")) { |obj| Reddit::Post.new(**obj.to_json) }
+          prefix(prefix: File.join(PREFIX, "posts/")) { |obj| Reddit::Post.new(**obj) }
         end
 
         def list_slack_webhooks(**options)
-          prefix(prefix: File.join(PREFIX, "auths/")) { |obj| Slack::Webhook.new(**obj.to_json) }
+          prefix(prefix: File.join(PREFIX, "auths/")) { |obj| Slack::Webhook.new(**obj) }
         end
 
         private
