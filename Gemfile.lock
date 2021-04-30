@@ -62,7 +62,7 @@ GEM
       method_source (~> 1.0)
     public_suffix (4.0.6)
     rake (13.0.3)
-    rexml (3.2.4)
+    rexml (3.2.5)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
       rspec-expectations (~> 3.10.0)
@@ -105,6 +105,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   aws-sdk-s3 (~> 1.0)
